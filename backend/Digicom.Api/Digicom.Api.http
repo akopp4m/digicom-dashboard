@@ -1,0 +1,6 @@
+@Digicom.Api_HostAddress = http://localhost:5125
+
+GET {{Digicom.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

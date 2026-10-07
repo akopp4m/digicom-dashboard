@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="Digicom.Api/Digicom.Api.csproj" />
+  <Project Path="Digicom.Tests/Digicom.Tests.csproj" />
+</Solution>
