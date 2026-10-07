@@ -494,3 +494,5 @@ $RECYCLE.BIN/
 .history/
 
 # End of https://mrkandreev.name/snippets/gitignore-generator/#Linux,macOS,Csharp,Angular,Windows,VisualStudioCode
+
+data/digicom.db
