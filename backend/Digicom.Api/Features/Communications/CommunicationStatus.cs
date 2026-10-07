@@ -5,5 +5,5 @@ public enum CommunicationStatus
     Answered,
     Missed,
     Abandoned,
-    Failed
+    Failed,
 }
