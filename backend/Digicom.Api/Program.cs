@@ -1,3 +1,4 @@
+using Digicom.Api.Features.Dashboard;
 using Digicom.Api.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,6 +20,8 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
+
+GetDashboard.MapEndpoint(app);
 
 app.Run();
