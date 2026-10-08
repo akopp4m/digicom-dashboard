@@ -1,1 +1,13 @@
 <p>dashboard works!</p>
+
+<div>Dashboard exists: {{ dashboard() != null }}</div>
+
+<div>{{ dashboard() | json }}</div>
+
+<div>{{ dashboard()?.departmentWaitingTimes | json }}</div>
+
+@if (dashboard()?.departmentWaitingTimes != null) {
+  <app-waiting-time-by-department
+    [data]="dashboard()!.departmentWaitingTimes"
+  ></app-waiting-time-by-department>
+}
