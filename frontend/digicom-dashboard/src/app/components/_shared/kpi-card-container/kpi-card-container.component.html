@@ -1,0 +1,5 @@
+<div class="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-6">
+  @for (card of cards(); track card.label) {
+    <app-kpi-card [data]="card" />
+  }
+</div>
