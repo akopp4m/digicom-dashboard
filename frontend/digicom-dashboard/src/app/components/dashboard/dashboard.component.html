@@ -11,3 +11,6 @@
     [data]="dashboard()!.departmentWaitingTimes"
   ></app-waiting-time-by-department>
 }
+@if (dashboard()?.communicationEvents != null) {
+  <app-contacts-over-time [data]="dashboard()!.communicationEvents"></app-contacts-over-time>
+}

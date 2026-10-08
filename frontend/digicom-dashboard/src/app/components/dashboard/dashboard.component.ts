@@ -10,13 +10,13 @@ import { DashboardService } from '../../services/dashboard.service';
 import { DashboardDTO } from '../../models/dashboard.model';
 import { WaitingTimeByDepartmentComponent } from '../charts/waiting-time-by-department/waiting-time-by-department.component';
 import { CommonModule } from '@angular/common';
+import { ContactsOverTimeComponent } from '../charts/contacts-over-time/contacts-over-time.component';
 
 @Component({
-  imports: [WaitingTimeByDepartmentComponent, CommonModule],
+  imports: [WaitingTimeByDepartmentComponent, ContactsOverTimeComponent, CommonModule],
   selector: 'app-dashboard',
   styleUrl: './dashboard.component.css',
   templateUrl: './dashboard.component.html',
-  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class DashboardComponent implements OnInit {
   private readonly dashboardService = inject(DashboardService);
