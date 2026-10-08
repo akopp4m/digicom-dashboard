@@ -5,9 +5,9 @@ import { DashboardDTO } from '../models/dashboard.model';
 
 @Service()
 export class DashboardService {
-    private readonly http = inject(HttpClient);
+  private readonly http = inject(HttpClient);
 
-    getDashboard(): Observable<DashboardDTO> {
-        return this.http.get<DashboardDTO>('/api/dashboard');
-    }
+  getDashboard(): Observable<DashboardDTO> {
+    return this.http.get<DashboardDTO>('/api/dashboard');
+  }
 }

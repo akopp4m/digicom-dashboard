@@ -21,7 +21,7 @@ public static class GetDashboard
         return Calculate(events);
     }
 
-    private static DashboardResponse Calculate(IReadOnlyCollection<CommunicationEvent> events)
+    private static DashboardResponse Calculate(List<CommunicationEvent> events)
     {
         var total = events.Count;
 
@@ -38,7 +38,9 @@ public static class GetDashboard
                 AverageDurationSeconds: 0,
                 AverageWaitingTimeSeconds: 0,
                 AverageQualityScore: 0,
-                ReachabilityRate: 0
+                ReachabilityRate: 0,
+                CommunicationEvents: [],
+                DepartmentWaitingTimes: []
             );
         }
 
@@ -62,6 +64,24 @@ public static class GetDashboard
 
         var reachabilityRate = total == 0 ? 0 : (double)reachable / total * 100;
 
+        var communicationEvents = events
+            .Select(e => new CommunicationEventResponse(
+                Timestamp: e.Timestamp,
+                Direction: e.Direction.ToString(),
+                WaitingTimeSeconds: e.WaitingTimeSeconds,
+                QualityScore: e.QualityScore
+            ))
+            .ToArray();
+
+        var departmentWaitingTimes = events
+            .GroupBy(e => e.Department)
+            .Select(g => new DepartmentWaitingTimeResponse(
+                Department: g.Key,
+                AverageWaitingTimeSeconds: g.Average(e => e.WaitingTimeSeconds)
+            ))
+            .OrderByDescending(x => x.AverageWaitingTimeSeconds)
+            .ToArray();
+
         return new DashboardResponse(
             TotalEvents: total,
             InboundEvents: inbound,
@@ -73,7 +93,9 @@ public static class GetDashboard
             AverageDurationSeconds: averageDuration,
             AverageWaitingTimeSeconds: averageWaitingTime,
             AverageQualityScore: averageQualityScore,
-            ReachabilityRate: reachabilityRate
+            ReachabilityRate: reachabilityRate,
+            CommunicationEvents: communicationEvents,
+            DepartmentWaitingTimes: departmentWaitingTimes
         );
     }
 }
@@ -89,5 +111,19 @@ public sealed record DashboardResponse(
     double AverageDurationSeconds,
     double AverageWaitingTimeSeconds,
     double AverageQualityScore,
-    double ReachabilityRate
+    double ReachabilityRate,
+    CommunicationEventResponse[] CommunicationEvents,
+    DepartmentWaitingTimeResponse[] DepartmentWaitingTimes
+);
+
+public sealed record CommunicationEventResponse(
+    DateTimeOffset Timestamp,
+    string Direction,
+    int WaitingTimeSeconds,
+    int QualityScore
+);
+
+public sealed record DepartmentWaitingTimeResponse(
+    string Department,
+    double AverageWaitingTimeSeconds
 );
