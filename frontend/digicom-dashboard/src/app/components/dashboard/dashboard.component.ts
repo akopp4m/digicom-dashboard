@@ -21,15 +21,18 @@ export class DashboardComponent implements OnInit {
   private readonly dashboardService = inject(DashboardService);
 
   public readonly dashboard = signal<DashboardDTO | undefined>(undefined);
+  public readonly loading = signal<boolean>(true);
 
   ngOnInit(): void {
     this.dashboardService.getDashboard().subscribe({
       next: (dashboard) => {
         console.log(dashboard);
         this.dashboard.set(dashboard);
+        this.loading.set(false);
       },
       error: (error) => {
         console.error(error);
+        this.loading.set(false);
       },
     });
   }

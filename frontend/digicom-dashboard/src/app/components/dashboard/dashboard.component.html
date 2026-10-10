@@ -1,12 +1,44 @@
-@if (dashboard() != null) {
-  <app-kpi-card-container [data]="dashboard()!"></app-kpi-card-container>
-}
+<div class="grid grid-cols-4 gap-5">
+  <header class="col-span-4 mb-8 flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-semibold tracking-tight text-gray-900">
+        Contact Center Intelligence
+      </h1>
+      <p class="mt-1 text-sm text-gray-500">Anrufanalytics und operative Insights</p>
+    </div>
 
-@if (dashboard()?.departmentWaitingTimes != null) {
-  <app-waiting-time-by-department
-    [data]="dashboard()!.departmentWaitingTimes"
-  ></app-waiting-time-by-department>
-}
-@if (dashboard()?.communicationEvents != null) {
-  <app-contacts-over-time [data]="dashboard()!.communicationEvents"></app-contacts-over-time>
-}
+    @if (!loading()) {
+      <div
+        class="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium"
+        [ngClass]="
+          dashboard() != null
+            ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+            : 'border-red-200 bg-red-50 text-red-700'
+        "
+      >
+        <span
+          class="h-2 w-2 rounded-full"
+          [ngClass]="dashboard() != null ? 'bg-emerald-500' : 'bg-red-500'"
+        ></span>
+        {{ dashboard() != null ? 'Dashboard aktiv' : 'keine Verbindung' }}
+      </div>
+    }
+  </header>
+
+  @if (dashboard() != null) {
+    <app-kpi-card-container class="col-span-4" [data]="dashboard()!"></app-kpi-card-container>
+  }
+
+  @if (dashboard()?.departmentWaitingTimes != null) {
+    <app-waiting-time-by-department
+      class="col-span-2"
+      [data]="dashboard()!.departmentWaitingTimes"
+    ></app-waiting-time-by-department>
+  }
+  @if (dashboard()?.communicationEvents != null) {
+    <app-contacts-over-time
+      class="col-span-2"
+      [data]="dashboard()!.communicationEvents"
+    ></app-contacts-over-time>
+  }
+</div>
