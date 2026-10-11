@@ -13,8 +13,8 @@ public static class GetDashboard
     }
 
     private static async Task<Results<Ok<DashboardResponse>, BadRequest<string>>> HandleAsync(
-        DateTimeOffset? from,
-        DateTimeOffset? to,
+        DateTime? from,
+        DateTime? to,
         AppDbContext db,
         CancellationToken cancellationToken
     )
@@ -23,10 +23,21 @@ public static class GetDashboard
         {
             return TypedResults.BadRequest("Both 'from' and 'to' must be provided together.");
         }
+        if (
+            from.HasValue
+            && (from.Value.Kind != DateTimeKind.Utc || to!.Value.Kind != DateTimeKind.Utc)
+        )
+        {
+            return TypedResults.BadRequest("Timestamps must be UTC.");
+        }
+
         if (from.HasValue && from.Value >= to!.Value)
         {
             return TypedResults.BadRequest("'from' must be earlier than 'to'.");
         }
+
+        Console.WriteLine("FROM: " + from);
+        Console.WriteLine("TO: " + to);
 
         IQueryable<CommunicationEvent> query = db.CommunicationEvents.AsNoTracking();
 
@@ -161,7 +172,7 @@ public sealed record DashboardResponse(
 );
 
 public sealed record CommunicationEventResponse(
-    DateTimeOffset Timestamp,
+    DateTime Timestamp,
     string Direction,
     int WaitingTimeSeconds,
     int QualityScore
