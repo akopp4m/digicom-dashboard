@@ -51,10 +51,12 @@ public sealed class CommunicationCsvImporter(
         Validate(events);
 
         var latestDate = events.Max(x => x.Timestamp).Date;
-        var offset = DateTime.Today - latestDate;
+        var offset = DateTime.UtcNow.Date - latestDate;
 
         foreach (var item in events)
-            item.Timestamp = item.Timestamp.Add(offset);
+        {
+            item.Timestamp = DateTime.SpecifyKind(item.Timestamp.Add(offset), DateTimeKind.Utc);
+        }
 
         await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
 
@@ -70,17 +72,23 @@ public sealed class CommunicationCsvImporter(
     {
         foreach (var item in events)
         {
-            if (item.Timestamp == default
+            if (
+                item.Timestamp == default
                 || string.IsNullOrWhiteSpace(item.CustomerId)
                 || string.IsNullOrWhiteSpace(item.Department)
                 || string.IsNullOrWhiteSpace(item.Agent)
-                || string.IsNullOrWhiteSpace(item.CallerNumber))
+                || string.IsNullOrWhiteSpace(item.CallerNumber)
+            )
                 throw new InvalidDataException("All communication fields are required.");
 
-            if (!Enum.IsDefined(item.Direction)
+            if (
+                !Enum.IsDefined(item.Direction)
                 || !Enum.IsDefined(item.Channel)
-                || !Enum.IsDefined(item.Status))
-                throw new InvalidDataException("Direction, channel and status must be valid enum values.");
+                || !Enum.IsDefined(item.Status)
+            )
+                throw new InvalidDataException(
+                    "Direction, channel and status must be valid enum values."
+                );
 
             if (item.Direction == CommunicationDirection.Outbound && item.WaitingTimeSeconds != 0)
                 throw new InvalidDataException("Outbound calls must have zero waiting time.");
