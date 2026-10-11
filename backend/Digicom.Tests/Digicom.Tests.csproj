@@ -22,4 +22,7 @@
     <ProjectReference Include="..\Digicom.Api\Digicom.Api.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="../Digicom.Api/data/digicom_communications_600.csv" Link="data/digicom_communications_600.csv" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
 </Project>

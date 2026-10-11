@@ -1,4 +1,4 @@
-namespace Digicom.Api.Features.Communications;
+namespace Digicom.Api.Infrastructure.Entities;
 
 public sealed class CommunicationEvent
 {

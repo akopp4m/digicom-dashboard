@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Digicom.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20261007142317_Initial")]
+    [Migration("20261011164612_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -20,7 +20,7 @@ namespace Digicom.Api.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.12");
 
-            modelBuilder.Entity("Digicom.Api.Features.Communications.CommunicationEvent", b =>
+            modelBuilder.Entity("Digicom.Api.Infrastructure.Entities.CommunicationEvent", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -67,7 +67,7 @@ namespace Digicom.Api.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("Timestamp")
+                    b.Property<DateTimeOffset>("Timestamp")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("WaitingTimeSeconds")

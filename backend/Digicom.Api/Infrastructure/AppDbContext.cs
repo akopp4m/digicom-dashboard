@@ -1,4 +1,4 @@
-using Digicom.Api.Features.Communications;
+using Digicom.Api.Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Digicom.Api.Infrastructure;
