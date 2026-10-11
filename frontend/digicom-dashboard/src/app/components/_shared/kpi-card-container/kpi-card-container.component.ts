@@ -37,7 +37,7 @@ export class KpiCardContainerComponent {
         textColorClass: 'text-amber-700',
       },
       {
-        label: 'Durchsch. Dauer',
+        label: 'Durchschn. Dauer',
         value: Math.round(data.averageDurationSeconds),
         unit: 'sec',
         backgroundColorClass: 'bg-violet-50',
