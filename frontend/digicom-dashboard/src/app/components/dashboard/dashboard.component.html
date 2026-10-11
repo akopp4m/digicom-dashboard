@@ -1,5 +1,5 @@
 <div class="grid grid-cols-4 gap-5">
-  <header class="col-span-4 mb-8 flex items-center justify-between">
+  <header class="col-span-full mb-8 flex items-center justify-between">
     <div>
       <h1 class="text-3xl font-semibold tracking-tight text-gray-900">
         Contact Center Intelligence
@@ -26,7 +26,10 @@
   </header>
 
   @if (dashboard() != null) {
-    <app-kpi-card-container class="col-span-4" [data]="dashboard()!"></app-kpi-card-container>
+    <div class="col-span-full flex flex-row justify-end">
+      <app-period-filter (periodChange)="onPeriodChange($event)"></app-period-filter>
+    </div>
+    <app-kpi-card-container class="col-span-full" [data]="dashboard()!"></app-kpi-card-container>
   }
 
   @if (dashboard()?.departmentWaitingTimes != null) {

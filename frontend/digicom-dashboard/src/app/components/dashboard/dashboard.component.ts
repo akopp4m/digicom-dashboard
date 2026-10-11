@@ -5,9 +5,11 @@ import { WaitingTimeByDepartmentComponent } from '../charts/waiting-time-by-depa
 import { CommonModule } from '@angular/common';
 import { ContactsOverTimeComponent } from '../charts/contacts-over-time/contacts-over-time.component';
 import { KpiCardContainerComponent } from '../_shared/kpi-card-container/kpi-card-container.component';
+import { PeriodFilterComponent } from '../_shared/period-filter/period-filter.component';
 
 @Component({
   imports: [
+    PeriodFilterComponent,
     KpiCardContainerComponent,
     WaitingTimeByDepartmentComponent,
     ContactsOverTimeComponent,
@@ -35,5 +37,9 @@ export class DashboardComponent implements OnInit {
         this.loading.set(false);
       },
     });
+  }
+
+  onPeriodChange(event: any) {
+    console.log(event);
   }
 }
