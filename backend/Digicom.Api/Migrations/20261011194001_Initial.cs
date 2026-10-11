@@ -17,7 +17,7 @@ namespace Digicom.Api.Migrations
                 {
                     Id = table.Column<long>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Timestamp = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
+                    Timestamp = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Direction = table.Column<string>(type: "TEXT", maxLength: 20, nullable: false),
                     Channel = table.Column<string>(type: "TEXT", maxLength: 20, nullable: false),
                     CustomerId = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),

@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Digicom.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20261011164612_Initial")]
+    [Migration("20261011194001_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -67,7 +67,7 @@ namespace Digicom.Api.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset>("Timestamp")
+                    b.Property<DateTime>("Timestamp")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("WaitingTimeSeconds")

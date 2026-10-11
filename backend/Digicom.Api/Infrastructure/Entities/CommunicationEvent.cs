@@ -4,7 +4,7 @@ public sealed class CommunicationEvent
 {
     public long Id { get; set; }
 
-    public DateTimeOffset Timestamp { get; set; }
+    public DateTime Timestamp { get; set; }
 
     public CommunicationDirection Direction { get; set; }
 
