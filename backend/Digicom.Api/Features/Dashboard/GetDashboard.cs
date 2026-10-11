@@ -20,29 +20,36 @@ public static class GetDashboard
     )
     {
         if (from.HasValue != to.HasValue)
+        {
             return TypedResults.BadRequest("Both 'from' and 'to' must be provided together.");
-
+        }
         if (from.HasValue && from.Value >= to!.Value)
+        {
             return TypedResults.BadRequest("'from' must be earlier than 'to'.");
+        }
 
-        var query = db.CommunicationEvents.AsNoTracking();
+        IQueryable<CommunicationEvent> query = db.CommunicationEvents.AsNoTracking();
 
         if (from.HasValue)
+        {
             query = query.Where(e => e.Timestamp >= from.Value);
+        }
 
         if (to.HasValue)
+        {
             query = query.Where(e => e.Timestamp < to.Value);
+        }
 
-        var events = await query.ToListAsync(cancellationToken);
+        List<CommunicationEvent> events = await query.ToListAsync(cancellationToken);
 
-        var calulatedResponse = Calculate(events);
+        DashboardResponse response = Calculate(events);
 
-        return TypedResults.Ok(calulatedResponse);
+        return TypedResults.Ok(response);
     }
 
     private static DashboardResponse Calculate(List<CommunicationEvent> events)
     {
-        var total = events.Count;
+        int total = events.Count;
 
         if (total == 0)
         {
@@ -63,40 +70,45 @@ public static class GetDashboard
             );
         }
 
-        var inbound = events.Count(e => e.Direction == CommunicationDirection.Inbound);
+        int inbound = events.Count(e => e.Direction == CommunicationDirection.Inbound);
 
-        var outbound = events.Count(e => e.Direction == CommunicationDirection.Outbound);
+        int outbound = events.Count(e => e.Direction == CommunicationDirection.Outbound);
 
-        var answered = events.Count(e => e.Status == CommunicationStatus.Answered);
+        int answered = events.Count(e => e.Status == CommunicationStatus.Answered);
 
-        var missed = events.Count(e => e.Status == CommunicationStatus.Missed);
+        int missed = events.Count(e => e.Status == CommunicationStatus.Missed);
 
-        var abandoned = events.Count(e => e.Status == CommunicationStatus.Abandoned);
+        int abandoned = events.Count(e => e.Status == CommunicationStatus.Abandoned);
 
-        var failed = events.Count(e => e.Status == CommunicationStatus.Failed);
+        int failed = events.Count(e => e.Status == CommunicationStatus.Failed);
 
-        var answeredCalls = events.Where(e => e.Status == CommunicationStatus.Answered).ToList();
-        var inboundCalls = events
+        List<CommunicationEvent> answeredCalls = events
+            .Where(e => e.Status == CommunicationStatus.Answered)
+            .ToList();
+
+        List<CommunicationEvent> inboundCalls = events
             .Where(e => e.Direction == CommunicationDirection.Inbound)
             .ToList();
 
-        var averageDuration = answeredCalls
+        double averageDuration = answeredCalls
             .Select(e => (double)e.DurationSeconds)
             .DefaultIfEmpty(0)
             .Average();
-        var averageWaitingTime = inboundCalls
+
+        double averageWaitingTime = inboundCalls
             .Select(e => (double)e.WaitingTimeSeconds)
             .DefaultIfEmpty(0)
             .Average();
-        var averageQualityScore = answeredCalls
+
+        double averageQualityScore = answeredCalls
             .Select(e => (double)e.QualityScore)
             .DefaultIfEmpty(0)
             .Average();
 
-        var answeredInbound = inboundCalls.Count(e => e.Status == CommunicationStatus.Answered);
-        var reachabilityRate = inbound == 0 ? 0 : (double)answeredInbound / inbound * 100;
+        int answeredInbound = inboundCalls.Count(e => e.Status == CommunicationStatus.Answered);
+        double reachabilityRate = inbound == 0 ? 0 : (double)answeredInbound / inbound * 100;
 
-        var communicationEvents = events
+        CommunicationEventResponse[] communicationEvents = events
             .Select(e => new CommunicationEventResponse(
                 Timestamp: e.Timestamp,
                 Direction: e.Direction.ToString(),
@@ -105,7 +117,7 @@ public static class GetDashboard
             ))
             .ToArray();
 
-        var departmentWaitingTimes = inboundCalls
+        DepartmentWaitingTimeResponse[] departmentWaitingTimes = inboundCalls
             .GroupBy(e => e.Department)
             .Select(g => new DepartmentWaitingTimeResponse(
                 Department: g.Key,
