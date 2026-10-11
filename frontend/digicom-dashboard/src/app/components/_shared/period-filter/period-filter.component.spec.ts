@@ -1,0 +1,21 @@
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { PeriodFilterComponent } from './period-filter.component';
+
+describe('PeriodFilterComponent', () => {
+  let component: PeriodFilterComponent;
+  let fixture: ComponentFixture<PeriodFilterComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [PeriodFilterComponent],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(PeriodFilterComponent);
+    component = fixture.componentInstance;
+    await fixture.whenStable();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});
