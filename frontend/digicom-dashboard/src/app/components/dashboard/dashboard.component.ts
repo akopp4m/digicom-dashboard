@@ -36,7 +36,6 @@ export class DashboardComponent implements OnInit {
   }
 
   onPeriodChange(event: PeriodDates) {
-    console.log(event);
     const { from, to } = event;
     this.loadDashboard(from?.toISOString(), to?.toISOString());
   }
@@ -47,6 +46,7 @@ export class DashboardComponent implements OnInit {
 
     this.dashboardSubscription = this.dashboardService.getDashboard(from, to).subscribe({
       next: (dashboard) => {
+        console.log(dashboard);
         this.dashboard.set(dashboard);
         this.loading.set(false);
       },
