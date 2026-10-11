@@ -12,7 +12,7 @@ import { KpiCardInput } from '../kpi-card/kpi-card.model';
 export class KpiCardContainerComponent {
   readonly data = input.required<DashboardDTO>();
 
-  readonly cards = computed<KpiCardInput[]>(() => {
+  readonly contactCards = computed<KpiCardInput[]>(() => {
     const data = this.data();
 
     return [
@@ -22,6 +22,49 @@ export class KpiCardContainerComponent {
         backgroundColorClass: 'bg-blue-50',
         textColorClass: 'text-blue-700',
       },
+      {
+        label: 'Eingehend',
+        value: data.inboundEvents,
+        backgroundColorClass: 'bg-blue-50',
+        textColorClass: 'text-blue-700',
+      },
+      {
+        label: 'Ausgehend',
+        value: data.outboundEvents,
+        backgroundColorClass: 'bg-blue-50',
+        textColorClass: 'text-blue-700',
+      },
+      {
+        label: 'Beantwortet',
+        value: data.answeredEvents,
+        backgroundColorClass: 'bg-emerald-50',
+        textColorClass: 'text-emerald-700',
+      },
+      {
+        label: 'Verpasst',
+        value: data.missedEvents,
+        backgroundColorClass: 'bg-amber-50',
+        textColorClass: 'text-amber-700',
+      },
+      {
+        label: 'Abgebrochen',
+        value: data.abandonedEvents,
+        backgroundColorClass: 'bg-orange-50',
+        textColorClass: 'text-orange-700',
+      },
+      {
+        label: 'Fehlgeschlagen',
+        value: data.failedEvents,
+        backgroundColorClass: 'bg-rose-50',
+        textColorClass: 'text-rose-700',
+      },
+    ];
+  });
+
+  readonly performanceCards = computed<KpiCardInput[]>(() => {
+    const data = this.data();
+
+    return [
       {
         label: 'Erreichbarkeit',
         value: data.reachabilityRate.toFixed(1),
@@ -49,12 +92,6 @@ export class KpiCardContainerComponent {
         unit: '/ 5',
         backgroundColorClass: 'bg-teal-50',
         textColorClass: 'text-teal-700',
-      },
-      {
-        label: 'Erfolglose Kontakte',
-        value: data.missedEvents + data.abandonedEvents + data.failedEvents,
-        backgroundColorClass: 'bg-rose-50',
-        textColorClass: 'text-rose-700',
       },
     ];
   });

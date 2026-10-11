@@ -1,5 +1,21 @@
-<div class="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-6">
-  @for (card of cards(); track card.label) {
-    <app-kpi-card [data]="card" />
-  }
+<div class="space-y-6">
+  <section>
+    <h2 class="mb-3 text-sm font-semibold text-gray-600">Kontaktvolumen & Status</h2>
+
+    <div class="grid grid-cols-2 gap-4 lg:grid-cols-4 xl:grid-cols-7">
+      @for (card of contactCards(); track card.label) {
+        <app-kpi-card [data]="card" />
+      }
+    </div>
+  </section>
+
+  <section>
+    <h2 class="mb-3 text-sm font-semibold text-gray-600">Performance & Qualität</h2>
+
+    <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      @for (card of performanceCards(); track card.label) {
+        <app-kpi-card [data]="card" />
+      }
+    </div>
+  </section>
 </div>
