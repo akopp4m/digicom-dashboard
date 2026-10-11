@@ -1,5 +1,6 @@
-using Digicom.Api.Features.Communications;
 using Digicom.Api.Infrastructure;
+using Digicom.Api.Infrastructure.Entities;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 namespace Digicom.Api.Features.Dashboard;
@@ -11,14 +12,32 @@ public static class GetDashboard
         endpoints.MapGet("/api/dashboard", HandleAsync).WithName("GetDashboard");
     }
 
-    private static async Task<DashboardResponse> HandleAsync(
+    private static async Task<Results<Ok<DashboardResponse>, BadRequest<string>>> HandleAsync(
+        DateTimeOffset? from,
+        DateTimeOffset? to,
         AppDbContext db,
         CancellationToken cancellationToken
     )
     {
-        var events = await db.CommunicationEvents.AsNoTracking().ToListAsync(cancellationToken);
+        if (from.HasValue != to.HasValue)
+            return TypedResults.BadRequest("Both 'from' and 'to' must be provided together.");
 
-        return Calculate(events);
+        if (from.HasValue && from.Value >= to!.Value)
+            return TypedResults.BadRequest("'from' must be earlier than 'to'.");
+
+        var query = db.CommunicationEvents.AsNoTracking();
+
+        if (from.HasValue)
+            query = query.Where(e => e.Timestamp >= from.Value);
+
+        if (to.HasValue)
+            query = query.Where(e => e.Timestamp < to.Value);
+
+        var events = await query.ToListAsync(cancellationToken);
+
+        var calulatedResponse = Calculate(events);
+
+        return TypedResults.Ok(calulatedResponse);
     }
 
     private static DashboardResponse Calculate(List<CommunicationEvent> events)
@@ -56,13 +75,26 @@ public static class GetDashboard
 
         var failed = events.Count(e => e.Status == CommunicationStatus.Failed);
 
-        var averageDuration = events.Average(e => e.DurationSeconds);
-        var averageWaitingTime = events.Average(e => e.WaitingTimeSeconds);
-        var averageQualityScore = events.Average(e => e.QualityScore);
+        var answeredCalls = events.Where(e => e.Status == CommunicationStatus.Answered).ToList();
+        var inboundCalls = events
+            .Where(e => e.Direction == CommunicationDirection.Inbound)
+            .ToList();
 
-        var reachable = answered + outbound;
+        var averageDuration = answeredCalls
+            .Select(e => (double)e.DurationSeconds)
+            .DefaultIfEmpty(0)
+            .Average();
+        var averageWaitingTime = inboundCalls
+            .Select(e => (double)e.WaitingTimeSeconds)
+            .DefaultIfEmpty(0)
+            .Average();
+        var averageQualityScore = answeredCalls
+            .Select(e => (double)e.QualityScore)
+            .DefaultIfEmpty(0)
+            .Average();
 
-        var reachabilityRate = total == 0 ? 0 : (double)reachable / total * 100;
+        var answeredInbound = inboundCalls.Count(e => e.Status == CommunicationStatus.Answered);
+        var reachabilityRate = inbound == 0 ? 0 : (double)answeredInbound / inbound * 100;
 
         var communicationEvents = events
             .Select(e => new CommunicationEventResponse(
@@ -73,7 +105,7 @@ public static class GetDashboard
             ))
             .ToArray();
 
-        var departmentWaitingTimes = events
+        var departmentWaitingTimes = inboundCalls
             .GroupBy(e => e.Department)
             .Select(g => new DepartmentWaitingTimeResponse(
                 Department: g.Key,
