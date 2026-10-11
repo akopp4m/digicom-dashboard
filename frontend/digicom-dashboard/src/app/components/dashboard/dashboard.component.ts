@@ -5,7 +5,11 @@ import { WaitingTimeByDepartmentComponent } from '../charts/waiting-time-by-depa
 import { CommonModule } from '@angular/common';
 import { ContactsOverTimeComponent } from '../charts/contacts-over-time/contacts-over-time.component';
 import { KpiCardContainerComponent } from '../_shared/kpi-card-container/kpi-card-container.component';
-import { PeriodFilterComponent } from '../_shared/period-filter/period-filter.component';
+import {
+  PeriodDates,
+  PeriodFilterComponent,
+} from '../_shared/period-filter/period-filter.component';
+import { Subscription } from 'rxjs';
 
 @Component({
   imports: [
@@ -25,10 +29,24 @@ export class DashboardComponent implements OnInit {
   public readonly dashboard = signal<DashboardDTO | undefined>(undefined);
   public readonly loading = signal<boolean>(true);
 
+  private dashboardSubscription?: Subscription;
+
   ngOnInit(): void {
-    this.dashboardService.getDashboard().subscribe({
+    this.loadDashboard();
+  }
+
+  onPeriodChange(event: PeriodDates) {
+    console.log(event);
+    const { from, to } = event;
+    this.loadDashboard(from?.toISOString(), to?.toISOString());
+  }
+
+  private loadDashboard(from?: string, to?: string): void {
+    this.dashboardSubscription?.unsubscribe();
+    this.loading.set(true);
+
+    this.dashboardSubscription = this.dashboardService.getDashboard(from, to).subscribe({
       next: (dashboard) => {
-        console.log(dashboard);
         this.dashboard.set(dashboard);
         this.loading.set(false);
       },
@@ -37,9 +55,5 @@ export class DashboardComponent implements OnInit {
         this.loading.set(false);
       },
     });
-  }
-
-  onPeriodChange(event: any) {
-    console.log(event);
   }
 }

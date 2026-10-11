@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
 import { Observable } from 'rxjs';
 import { DashboardDTO } from '../models/dashboard.model';
@@ -7,7 +7,14 @@ import { DashboardDTO } from '../models/dashboard.model';
 export class DashboardService {
   private readonly http = inject(HttpClient);
 
-  getDashboard(): Observable<DashboardDTO> {
-    return this.http.get<DashboardDTO>('/api/dashboard');
+  getDashboard(from?: string, to?: string): Observable<DashboardDTO> {
+    let params = new HttpParams();
+
+    console.log({ from, to });
+    if (from != null && to != null) {
+      params = params.set('from', from).set('to', to);
+    }
+
+    return this.http.get<DashboardDTO>('/api/dashboard', { params });
   }
 }
