@@ -2,6 +2,8 @@ import { Component, computed, input } from '@angular/core';
 import { KpiCardComponent } from '../kpi-card/kpi-card.component';
 import { DashboardDTO } from '../../../models/dashboard.model';
 import { KpiCardInput } from '../kpi-card/kpi-card.model';
+import { KPI_CARD_STYLES } from '../kpi-card/kpi-card.utils';
+import { formatNumber } from '../../../utils/number-format.utils';
 
 @Component({
   selector: 'app-kpi-card-container',
@@ -18,45 +20,38 @@ export class KpiCardContainerComponent {
     return [
       {
         label: 'Kontakte Gesamt',
-        value: data.totalEvents,
-        backgroundColorClass: 'bg-blue-50',
-        textColorClass: 'text-blue-700',
+        value: formatNumber(data.totalEvents),
+        ...KPI_CARD_STYLES.contact,
       },
       {
         label: 'Eingehend',
-        value: data.inboundEvents,
-        backgroundColorClass: 'bg-blue-50',
-        textColorClass: 'text-blue-700',
+        value: formatNumber(data.inboundEvents),
+        ...KPI_CARD_STYLES.contact,
       },
       {
         label: 'Ausgehend',
-        value: data.outboundEvents,
-        backgroundColorClass: 'bg-blue-50',
-        textColorClass: 'text-blue-700',
+        value: formatNumber(data.outboundEvents),
+        ...KPI_CARD_STYLES.contact,
       },
       {
         label: 'Beantwortet',
-        value: data.answeredEvents,
-        backgroundColorClass: 'bg-emerald-50',
-        textColorClass: 'text-emerald-700',
+        value: formatNumber(data.answeredEvents),
+        ...KPI_CARD_STYLES.success,
       },
       {
         label: 'Verpasst',
-        value: data.missedEvents,
-        backgroundColorClass: 'bg-amber-50',
-        textColorClass: 'text-amber-700',
+        value: formatNumber(data.missedEvents),
+        ...KPI_CARD_STYLES.warning,
       },
       {
         label: 'Abgebrochen',
-        value: data.abandonedEvents,
-        backgroundColorClass: 'bg-orange-50',
-        textColorClass: 'text-orange-700',
+        value: formatNumber(data.abandonedEvents),
+        ...KPI_CARD_STYLES.abandoned,
       },
       {
         label: 'Fehlgeschlagen',
-        value: data.failedEvents,
-        backgroundColorClass: 'bg-rose-50',
-        textColorClass: 'text-rose-700',
+        value: formatNumber(data.failedEvents),
+        ...KPI_CARD_STYLES.error,
       },
     ];
   });
@@ -67,31 +62,27 @@ export class KpiCardContainerComponent {
     return [
       {
         label: 'Erreichbarkeit',
-        value: data.reachabilityRate.toFixed(1),
+        value: formatNumber(data.reachabilityRate, 1),
         unit: '%',
-        backgroundColorClass: 'bg-emerald-50',
-        textColorClass: 'text-emerald-700',
+        ...KPI_CARD_STYLES.success,
       },
       {
         label: 'Durchschn. Wartezeit',
-        value: Math.round(data.averageWaitingTimeSeconds),
+        value: formatNumber(data.averageWaitingTimeSeconds),
         unit: 'sec',
-        backgroundColorClass: 'bg-amber-50',
-        textColorClass: 'text-amber-700',
+        ...KPI_CARD_STYLES.warning,
       },
       {
         label: 'Durchschn. Dauer',
-        value: Math.round(data.averageDurationSeconds),
+        value: formatNumber(data.averageDurationSeconds),
         unit: 'sec',
-        backgroundColorClass: 'bg-violet-50',
-        textColorClass: 'text-violet-700',
+        ...KPI_CARD_STYLES.duration,
       },
       {
         label: 'Durchschn. Qualität',
-        value: data.averageQualityScore.toFixed(1),
+        value: formatNumber(data.averageQualityScore, 1),
         unit: '/ 5',
-        backgroundColorClass: 'bg-teal-50',
-        textColorClass: 'text-teal-700',
+        ...KPI_CARD_STYLES.quality,
       },
     ];
   });

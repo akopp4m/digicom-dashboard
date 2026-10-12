@@ -1,4 +1,5 @@
 import { Component, computed, input } from '@angular/core';
+import { formatNumber } from '../../../utils/number-format.utils';
 import { NgxEchartsDirective, provideEchartsCore } from 'ngx-echarts';
 import * as echarts from 'echarts/core';
 import { HeatmapChart } from 'echarts/charts';
@@ -11,8 +12,7 @@ import {
 import { CanvasRenderer } from 'echarts/renderers';
 import type { EChartsOption } from 'echarts';
 import type { CommunicationEventDTO } from '../../../models/dashboard.model';
-import { formatChartNumber } from '../department-chart.utils';
-import { CHART_COLORS, contrastingTextColor } from '../chart-color.utils';
+import { CHART_COLORS, calculatePercentage, contrastingTextColor } from '../chart.utils';
 
 echarts.use([
   HeatmapChart,
@@ -84,7 +84,7 @@ export class WaitingQualityHeatmapComponent {
           rating: score,
           count,
           total,
-          percentage: total > 0 ? (count / total) * 100 : 0,
+          percentage: calculatePercentage(count, total),
         };
       });
     });
@@ -182,7 +182,7 @@ export class WaitingQualityHeatmapComponent {
       tooltip: { formatter: () => this.formatTooltip(cell, ratingColor) },
       label: {
         color: contrastingTextColor(backgroundColor),
-        formatter: () => (cell.total > 0 ? `${formatChartNumber(cell.percentage, 0)} %` : '–'),
+        formatter: () => (cell.total > 0 ? `${formatNumber(cell.percentage, 0)} %` : '–'),
       },
     };
   }
@@ -198,10 +198,9 @@ export class WaitingQualityHeatmapComponent {
   private formatTooltip(cell: HeatmapCell, ratingColor: string): string {
     const waitingTime = this.formatWaitingTimeRange(cell.bandIndex);
     const marker = echarts.format.getTooltipMarker(ratingColor);
-    const percentage =
-      cell.total > 0 ? `${formatChartNumber(cell.percentage, 1)} %` : 'Keine Kontakte';
-    const count = formatChartNumber(cell.count, 0);
-    const total = formatChartNumber(cell.total, 0);
+    const percentage = cell.total > 0 ? `${formatNumber(cell.percentage, 1)} %` : 'Keine Kontakte';
+    const count = formatNumber(cell.count, 0);
+    const total = formatNumber(cell.total, 0);
 
     return `
       <div class="mb-2 text-sm font-semibold">${waitingTime}</div>

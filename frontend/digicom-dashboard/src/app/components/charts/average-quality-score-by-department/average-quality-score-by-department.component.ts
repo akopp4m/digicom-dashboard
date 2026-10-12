@@ -1,4 +1,5 @@
 import { Component, computed, input } from '@angular/core';
+import { formatNumber } from '../../../utils/number-format.utils';
 import { NgxEchartsDirective, provideEchartsCore } from 'ngx-echarts';
 import * as echarts from 'echarts/core';
 import { BarChart } from 'echarts/charts';
@@ -6,7 +7,14 @@ import { GridComponent, TooltipComponent } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
 import type { EChartsOption } from 'echarts';
 import type { DepartmentStatisticsDTO } from '../../../models/dashboard.model';
-import { departmentColor, departmentLabel, formatChartNumber } from '../department-chart.utils';
+import {
+  CHART_COLORS,
+  CHART_ANIMATION,
+  DEPARTMENT_BAR_GRID,
+  departmentColor,
+  departmentLabel,
+  formatDepartmentTooltip,
+} from '../chart.utils';
 
 echarts.use([BarChart, GridComponent, TooltipComponent, CanvasRenderer]);
 
@@ -27,7 +35,7 @@ export class AverageQualityScoreByDepartmentComponent {
         ? this.data()
             .map(
               (item) =>
-                `${departmentLabel(item.department)}: ${formatChartNumber(item.averageQualityScore, 1)}`,
+                `${departmentLabel(item.department)}: ${formatNumber(item.averageQualityScore, 1)}`,
             )
             .join('; ')
         : 'Keine Daten verfügbar.'),
@@ -44,16 +52,15 @@ export class AverageQualityScoreByDepartmentComponent {
         axisPointer: { type: 'shadow' },
         formatter: (params) => {
           const item = Array.isArray(params) ? params[0] : params;
-          return `<strong>${echarts.format.encodeHTML(item.name)}</strong><br/>${item.marker}Durchschnittlicher Qualitätsscore: ${formatChartNumber(Number(item.value), 1)}`;
+          return formatDepartmentTooltip(
+            item.name,
+            item.marker,
+            'Durchschnittlicher Qualitätsscore',
+            formatNumber(Number(item.value), 1),
+          );
         },
       },
-      grid: {
-        left: 20,
-        right: 80,
-        top: 5,
-        bottom: 20,
-        outerBoundsMode: 'same',
-      },
+      grid: DEPARTMENT_BAR_GRID,
       xAxis: {
         type: 'value',
         show: false,
@@ -66,7 +73,7 @@ export class AverageQualityScoreByDepartmentComponent {
         data: data.map((item) => departmentLabel(item.department)),
         axisLine: { show: false },
         axisTick: { show: false },
-        axisLabel: { color: '#444', fontSize: 13 },
+        axisLabel: { color: CHART_COLORS.label, fontSize: 13 },
       },
       series: [
         {
@@ -82,14 +89,13 @@ export class AverageQualityScoreByDepartmentComponent {
           label: {
             show: true,
             position: 'right',
-            formatter: (params) => formatChartNumber(Number(params.value), 1),
+            formatter: (params) => formatNumber(Number(params.value), 1),
             fontSize: 12,
             fontWeight: 600,
-            color: '#444',
+            color: CHART_COLORS.label,
           },
           emphasis: { focus: 'series', itemStyle: { opacity: 0.85 } },
-          animationDuration: 600,
-          animationEasing: 'cubicOut',
+          ...CHART_ANIMATION,
         },
       ],
     };

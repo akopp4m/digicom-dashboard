@@ -1,4 +1,5 @@
 import { Component, input, computed } from '@angular/core';
+import { formatNumber } from '../../../utils/number-format.utils';
 import { NgxEchartsDirective, provideEchartsCore } from 'ngx-echarts';
 import * as echarts from 'echarts/core';
 import { BarChart } from 'echarts/charts';
@@ -6,7 +7,14 @@ import { GridComponent, TooltipComponent } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
 import type { EChartsOption } from 'echarts';
 import { DepartmentStatisticsDTO } from '../../../models/dashboard.model';
-import { departmentColor, departmentLabel, formatChartNumber } from '../department-chart.utils';
+import {
+  CHART_COLORS,
+  CHART_ANIMATION,
+  DEPARTMENT_BAR_GRID,
+  departmentColor,
+  departmentLabel,
+  formatDepartmentTooltip,
+} from '../chart.utils';
 
 echarts.use([BarChart, GridComponent, TooltipComponent, CanvasRenderer]);
 
@@ -35,17 +43,16 @@ export class WaitingTimeByDepartmentComponent {
         },
         formatter: (params) => {
           const item = Array.isArray(params) ? params[0] : params;
-          return `<strong>${echarts.format.encodeHTML(item.name)}</strong><br/>${item.marker}Durchschnittliche Wartezeit: ${formatChartNumber(Number(item.value), 2)} s`;
+          return formatDepartmentTooltip(
+            item.name,
+            item.marker,
+            'Durchschnittliche Wartezeit',
+            `${formatNumber(Number(item.value), 2)} s`,
+          );
         },
       },
 
-      grid: {
-        left: 20,
-        right: 80,
-        top: 5,
-        bottom: 20,
-        outerBoundsMode: 'same',
-      },
+      grid: DEPARTMENT_BAR_GRID,
       xAxis: {
         type: 'value',
         show: false,
@@ -63,7 +70,7 @@ export class WaitingTimeByDepartmentComponent {
           show: false,
         },
         axisLabel: {
-          color: '#444',
+          color: CHART_COLORS.label,
           fontSize: 13,
         },
       },
@@ -86,7 +93,7 @@ export class WaitingTimeByDepartmentComponent {
           label: {
             show: true,
             position: 'right',
-            formatter: (params) => `${formatChartNumber(Number(params.value), 2)} s`,
+            formatter: (params) => `${formatNumber(Number(params.value), 2)} s`,
             fontSize: 12,
             fontWeight: 600,
           },
@@ -98,8 +105,7 @@ export class WaitingTimeByDepartmentComponent {
             },
           },
 
-          animationDuration: 600,
-          animationEasing: 'cubicOut',
+          ...CHART_ANIMATION,
         },
       ],
     };

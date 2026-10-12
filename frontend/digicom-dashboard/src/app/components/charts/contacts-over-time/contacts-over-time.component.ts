@@ -1,4 +1,5 @@
 import { Component, computed, input } from '@angular/core';
+import { formatNumber } from '../../../utils/number-format.utils';
 import { NgxEchartsDirective, provideEchartsCore } from 'ngx-echarts';
 import * as echarts from 'echarts/core';
 import { BarChart } from 'echarts/charts';
@@ -8,6 +9,7 @@ import type { EChartsOption } from 'echarts';
 import dayjs from 'dayjs/esm';
 import { CommunicationEventDTO } from '../../../models/dashboard.model';
 import type { PeriodDates } from '../../_shared/period-filter/period-filter.component';
+import { CHART_COLORS } from '../chart.utils';
 
 echarts.use([BarChart, GridComponent, LegendComponent, TooltipComponent, CanvasRenderer]);
 
@@ -107,9 +109,9 @@ export class ContactsOverTimeComponent {
             lines.push(`${start.format('HH:mm')}–${start.add(1, 'hour').format('HH:mm')} Uhr`);
           }
           lines.push(
-            `Eingehend: ${bucket.inbound.toLocaleString('de-DE')}`,
-            `Ausgehend: ${bucket.outbound.toLocaleString('de-DE')}`,
-            `Gesamt: ${(bucket.inbound + bucket.outbound).toLocaleString('de-DE')}`,
+            `Eingehend: ${formatNumber(bucket.inbound, 0)}`,
+            `Ausgehend: ${formatNumber(bucket.outbound, 0)}`,
+            `Gesamt: ${formatNumber(bucket.inbound + bucket.outbound, 0)}`,
           );
           return lines.join('\n');
         },
@@ -142,7 +144,7 @@ export class ContactsOverTimeComponent {
           show: false,
         },
         axisLabel: {
-          color: '#595959',
+          color: CHART_COLORS.mutedText,
           hideOverlap: true,
         },
       },
@@ -161,11 +163,11 @@ export class ContactsOverTimeComponent {
           show: false,
         },
         axisLabel: {
-          color: '#595959',
+          color: CHART_COLORS.mutedText,
         },
         splitLine: {
           lineStyle: {
-            color: '#eee',
+            color: CHART_COLORS.gridLine,
             type: 'dashed',
           },
         },
@@ -178,7 +180,7 @@ export class ContactsOverTimeComponent {
           data: data.map((x) => x.inbound),
           stack: 'contacts',
           barMaxWidth: 28,
-          itemStyle: { color: '#5273e8' },
+          itemStyle: { color: CHART_COLORS.inbound },
           emphasis: {
             focus: 'series',
           },
@@ -189,7 +191,7 @@ export class ContactsOverTimeComponent {
           data: data.map((x) => x.outbound),
           stack: 'contacts',
           barMaxWidth: 28,
-          itemStyle: { color: '#afd32a' },
+          itemStyle: { color: CHART_COLORS.outbound },
           emphasis: {
             focus: 'series',
           },
