@@ -2,26 +2,14 @@ import { Component, computed, input } from '@angular/core';
 import { NgxEchartsDirective, provideEchartsCore } from 'ngx-echarts';
 import * as echarts from 'echarts/core';
 import { BarChart } from 'echarts/charts';
-import {
-  GridComponent,
-  LegendComponent,
-  TitleComponent,
-  TooltipComponent,
-} from 'echarts/components';
+import { GridComponent, LegendComponent, TooltipComponent } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
 import type { EChartsOption } from 'echarts';
 import dayjs from 'dayjs/esm';
 import { CommunicationEventDTO } from '../../../models/dashboard.model';
 import type { PeriodDates } from '../../_shared/period-filter/period-filter.component';
 
-echarts.use([
-  BarChart,
-  GridComponent,
-  LegendComponent,
-  TitleComponent,
-  TooltipComponent,
-  CanvasRenderer,
-]);
+echarts.use([BarChart, GridComponent, LegendComponent, TooltipComponent, CanvasRenderer]);
 
 @Component({
   selector: 'app-contacts-over-time',
@@ -97,23 +85,6 @@ export class ContactsOverTimeComponent {
     });
 
     return {
-      title: {
-        text: 'Kontaktaufkommen im Zeitverlauf',
-        subtext: hourly
-          ? 'Eingehende und ausgehende Kontakte pro Stunde'
-          : 'Eingehende und ausgehende Kontakte pro Tag',
-        left: 0,
-        top: 0,
-        textStyle: {
-          fontSize: 18,
-          fontWeight: 600,
-        },
-        subtextStyle: {
-          fontSize: 12,
-          color: '#595959',
-        },
-      },
-
       tooltip: {
         trigger: 'axis',
         renderMode: 'richText',
@@ -145,15 +116,17 @@ export class ContactsOverTimeComponent {
       },
 
       legend: {
-        top: 52,
+        top: 0,
         right: 0,
       },
 
       grid: {
+        left: 5,
+        top: 35,
         outerBounds: {
-          left: 20,
+          left: 5,
           right: 20,
-          top: 90,
+          top: 35,
           bottom: 45,
         },
       },
