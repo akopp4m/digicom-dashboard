@@ -73,5 +73,9 @@
       [data]="dashboard()!.communicationEvents"
       [period]="selectedPeriod()"
     ></app-contacts-over-time>
+    <app-waiting-quality-scatter
+      class="col-span-2 block h-100 min-w-0"
+      [data]="dashboard()!.communicationEvents"
+    ></app-waiting-quality-scatter>
   }
 </div>

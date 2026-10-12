@@ -4,6 +4,7 @@ import { DashboardDTO } from '../../models/dashboard.model';
 import { WaitingTimeByDepartmentComponent } from '../charts/waiting-time-by-department/waiting-time-by-department.component';
 import { CommonModule } from '@angular/common';
 import { ContactsOverTimeComponent } from '../charts/contacts-over-time/contacts-over-time.component';
+import { WaitingQualityScatterComponent } from '../charts/waiting-quality-scatter/waiting-quality-scatter.component';
 import { AverageQualityScoreByDepartmentComponent } from '../charts/average-quality-score-by-department/average-quality-score-by-department.component';
 import { ContactsByDepartmentComponent } from '../charts/contacts-by-department/contacts-by-department.component';
 import { KpiCardContainerComponent } from '../_shared/kpi-card-container/kpi-card-container.component';
@@ -19,6 +20,7 @@ import { Subscription } from 'rxjs';
     KpiCardContainerComponent,
     WaitingTimeByDepartmentComponent,
     ContactsOverTimeComponent,
+    WaitingQualityScatterComponent,
     AverageQualityScoreByDepartmentComponent,
     ContactsByDepartmentComponent,
     CommonModule,
