@@ -69,7 +69,7 @@
   }
   @if (dashboard()?.communicationEvents != null) {
     <app-contacts-over-time
-      class="col-span-2"
+      class="col-span-2 block h-100 min-w-0"
       [data]="dashboard()!.communicationEvents"
       [period]="selectedPeriod()"
     ></app-contacts-over-time>
