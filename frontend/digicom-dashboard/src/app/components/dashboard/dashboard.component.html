@@ -44,4 +44,14 @@
       [data]="dashboard()!.communicationEvents"
     ></app-contacts-over-time>
   }
+  @if (dashboard()?.departmentStatistics != null) {
+    <div class="col-span-full grid grid-cols-2 gap-5">
+      <app-average-quality-score-by-department
+        [data]="dashboard()!.departmentStatistics"
+      ></app-average-quality-score-by-department>
+      <app-contacts-by-department
+        [data]="dashboard()!.departmentStatistics"
+      ></app-contacts-by-department>
+    </div>
+  }
 </div>
