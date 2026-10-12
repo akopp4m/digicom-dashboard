@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Digicom.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20261011194001_Initial")]
+    [Migration("20261012192357_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -26,10 +26,8 @@ namespace Digicom.Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Agent")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("TEXT");
+                    b.Property<int>("Agent")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("CallerNumber")
                         .IsRequired()
@@ -59,7 +57,7 @@ namespace Digicom.Api.Migrations
                     b.Property<int>("DurationSeconds")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("QualityScore")
+                    b.Property<int?>("QualityScore")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Status")

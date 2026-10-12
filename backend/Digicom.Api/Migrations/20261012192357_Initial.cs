@@ -22,12 +22,12 @@ namespace Digicom.Api.Migrations
                     Channel = table.Column<string>(type: "TEXT", maxLength: 20, nullable: false),
                     CustomerId = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
                     Department = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
-                    Agent = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
+                    Agent = table.Column<int>(type: "INTEGER", nullable: false),
                     CallerNumber = table.Column<string>(type: "TEXT", maxLength: 30, nullable: false),
                     DurationSeconds = table.Column<int>(type: "INTEGER", nullable: false),
                     WaitingTimeSeconds = table.Column<int>(type: "INTEGER", nullable: false),
                     Status = table.Column<string>(type: "TEXT", maxLength: 20, nullable: false),
-                    QualityScore = table.Column<int>(type: "INTEGER", nullable: false)
+                    QualityScore = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {

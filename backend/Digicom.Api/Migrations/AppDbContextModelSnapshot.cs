@@ -23,10 +23,8 @@ namespace Digicom.Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Agent")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("TEXT");
+                    b.Property<int>("Agent")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("CallerNumber")
                         .IsRequired()
@@ -56,7 +54,7 @@ namespace Digicom.Api.Migrations
                     b.Property<int>("DurationSeconds")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("QualityScore")
+                    b.Property<int?>("QualityScore")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Status")
