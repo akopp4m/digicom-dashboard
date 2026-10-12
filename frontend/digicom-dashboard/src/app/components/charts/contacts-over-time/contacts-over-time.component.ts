@@ -47,14 +47,14 @@ export class ContactsOverTimeComponent {
       direction: event.direction,
     }));
 
-    const from = period.from ?? events.at(0)?.timestamp;
-    const to = period.to ?? events.at(-1)?.timestamp;
-    if (!from || !to) {
+    const rangeStart = period.from ?? events.at(0)?.timestamp;
+    const rangeEnd = period.to ?? events.at(-1)?.timestamp;
+    if (!rangeStart || !rangeEnd) {
       return [];
     }
 
-    const first = from.startOf(unit);
-    const last = (period.to ? to.subtract(1, 'millisecond') : to).startOf(unit);
+    const first = rangeStart.startOf(unit);
+    const last = (period.to ? rangeEnd.subtract(1, 'millisecond') : rangeEnd).startOf(unit);
     const buckets = new Map<number, { timestamp: Date; inbound: number; outbound: number }>();
 
     // Fill the range with empty hourly or daily buckets before counting contacts.
