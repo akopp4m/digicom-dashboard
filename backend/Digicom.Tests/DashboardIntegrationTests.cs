@@ -135,7 +135,7 @@ public sealed class DashboardIntegrationTests
             Channel = CommunicationChannel.Phone,
             CustomerId = "Customer-1",
             Department = "Support",
-            Agent = "Agent-1",
+            Agent = 23,
             CallerNumber = "+436760000000",
             DurationSeconds = status == CommunicationStatus.Answered ? 60 : 0,
             WaitingTimeSeconds = waitingTime,

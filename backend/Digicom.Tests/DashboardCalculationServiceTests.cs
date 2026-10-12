@@ -55,7 +55,7 @@ public sealed class DashboardCalculationServiceTests
             CreateEvent(CommunicationDirection.Inbound, CommunicationStatus.Missed,
                 department: "Support", waitingTime: 20, quality: 1),
             CreateEvent(CommunicationDirection.Outbound, CommunicationStatus.Answered,
-                department: "Support", quality: 4),
+                department: "Support", quality: null),
         ];
 
         var departments = DashboardCalculationService.CalculateDepartmentStatistics(events);
@@ -64,7 +64,7 @@ public sealed class DashboardCalculationServiceTests
         await Assert.That(departments[0]).IsEqualTo(new DepartmentStatisticsResponse(
             Department: "Support",
             AverageWaitingTimeSeconds: 20,
-            AverageQualityScore: 4,
+            AverageQualityScore: 0,
             ContactAmount: 2
         ));
         await Assert.That(departments[1]).IsEqualTo(new DepartmentStatisticsResponse(
@@ -75,13 +75,29 @@ public sealed class DashboardCalculationServiceTests
         ));
     }
 
+    [Test]
+    public async Task CalculateAverageQualityScore_UsesAnsweredInboundContactsWithScores()
+    {
+        CommunicationEvent[] events =
+        [
+            CreateEvent(CommunicationDirection.Inbound, CommunicationStatus.Answered, quality: 4),
+            CreateEvent(CommunicationDirection.Inbound, CommunicationStatus.Answered, quality: null),
+            CreateEvent(CommunicationDirection.Outbound, CommunicationStatus.Answered, quality: 1),
+            CreateEvent(CommunicationDirection.Inbound, CommunicationStatus.Missed, quality: 1),
+        ];
+
+        double average = DashboardCalculationService.CalculateAverageQualityScore(events);
+
+        await Assert.That(average).IsEqualTo(4d);
+    }
+
     private static CommunicationEvent CreateEvent(
         CommunicationDirection direction,
         CommunicationStatus status,
         string department = "Support",
         int waitingTime = 0,
         int duration = 60,
-        int quality = 3
+        int? quality = 3
     ) => new()
     {
         Timestamp = new DateTime(2026, 1, 1, 12, 0, 0, DateTimeKind.Utc),
@@ -90,7 +106,7 @@ public sealed class DashboardCalculationServiceTests
         Channel = CommunicationChannel.Phone,
         CustomerId = "Customer-1",
         Department = department,
-        Agent = "Agent-1",
+        Agent = 23,
         CallerNumber = "+436760000000",
         WaitingTimeSeconds = waitingTime,
         DurationSeconds = status == CommunicationStatus.Answered ? duration : 0,
