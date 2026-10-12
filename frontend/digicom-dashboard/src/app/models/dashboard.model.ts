@@ -12,7 +12,7 @@ export interface DashboardDTO {
   reachabilityRate: number;
 
   communicationEvents: CommunicationEventDTO[];
-  departmentWaitingTimes: DepartmentWaitingTimeDTO[];
+  departmentStatistics: DepartmentStatisticsDTO[];
 }
 
 export interface CommunicationEventDTO {
@@ -22,7 +22,9 @@ export interface CommunicationEventDTO {
   qualityScore: number;
 }
 
-export interface DepartmentWaitingTimeDTO {
+export interface DepartmentStatisticsDTO {
   department: string;
   averageWaitingTimeSeconds: number;
+  averageQualityScore: number;
+  contactAmount: number;
 }

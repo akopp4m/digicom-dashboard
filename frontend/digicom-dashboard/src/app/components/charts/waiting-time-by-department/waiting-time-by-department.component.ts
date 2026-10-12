@@ -5,7 +5,7 @@ import { BarChart } from 'echarts/charts';
 import { GridComponent, TooltipComponent, TitleComponent } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
 import type { EChartsOption } from 'echarts';
-import { DepartmentWaitingTimeDTO } from '../../../models/dashboard.model';
+import { DepartmentStatisticsDTO } from '../../../models/dashboard.model';
 
 echarts.use([BarChart, GridComponent, TooltipComponent, TitleComponent, CanvasRenderer]);
 
@@ -17,7 +17,7 @@ echarts.use([BarChart, GridComponent, TooltipComponent, TitleComponent, CanvasRe
   templateUrl: './waiting-time-by-department.component.html',
 })
 export class WaitingTimeByDepartmentComponent {
-  readonly data = input<DepartmentWaitingTimeDTO[]>([]);
+  readonly data = input<DepartmentStatisticsDTO[]>([]);
 
   readonly chartOptions = computed<EChartsOption>(() => {
     const data = [...this.data()].sort(

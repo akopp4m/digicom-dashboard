@@ -32,10 +32,10 @@
     <app-kpi-card-container class="col-span-full" [data]="dashboard()!"></app-kpi-card-container>
   }
 
-  @if (dashboard()?.departmentWaitingTimes != null) {
+  @if (dashboard()?.departmentStatistics != null) {
     <app-waiting-time-by-department
       class="col-span-2"
-      [data]="dashboard()!.departmentWaitingTimes"
+      [data]="dashboard()!.departmentStatistics"
     ></app-waiting-time-by-department>
   }
   @if (dashboard()?.communicationEvents != null) {
