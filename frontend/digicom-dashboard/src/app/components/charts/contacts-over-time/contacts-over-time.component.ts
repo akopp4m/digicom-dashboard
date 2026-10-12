@@ -1,7 +1,7 @@
 import { Component, computed, input } from '@angular/core';
 import { NgxEchartsDirective, provideEchartsCore } from 'ngx-echarts';
 import * as echarts from 'echarts/core';
-import { LineChart } from 'echarts/charts';
+import { BarChart } from 'echarts/charts';
 import {
   GridComponent,
   LegendComponent,
@@ -15,7 +15,7 @@ import { CommunicationEventDTO } from '../../../models/dashboard.model';
 import type { PeriodDates } from '../../_shared/period-filter/period-filter.component';
 
 echarts.use([
-  LineChart,
+  BarChart,
   GridComponent,
   LegendComponent,
   TitleComponent,
@@ -34,92 +34,74 @@ export class ContactsOverTimeComponent {
   readonly data = input<CommunicationEventDTO[]>([]);
   readonly period = input<PeriodDates>({ option: 'all' });
 
-  readonly chartData = computed(() => {
-    const events = [...this.data()]
-      .map((event) => ({
-        ...event,
-        timestamp: dayjs(event.timestamp),
-      }))
-      .sort((a, b) => a.timestamp.valueOf() - b.timestamp.valueOf());
+  readonly aggregation = computed(() => {
+    const option = this.period().option;
+    return option === 'today' || option === 'yesterday' ? 'hour' : 'day';
+  });
 
-    if (events.length === 0) {
+  readonly chartData = computed(() => {
+    const period = this.period();
+    const unit = this.aggregation();
+    const events = this.data().map((event) => ({
+      timestamp: dayjs(event.timestamp),
+      direction: event.direction,
+    }));
+
+    const from = period.from ?? events.at(0)?.timestamp;
+    const to = period.to ?? events.at(-1)?.timestamp;
+    if (!from || !to) {
       return [];
     }
 
-    const buckets = new Map<
-      string,
-      {
-        timestamp: dayjs.Dayjs;
-        inbound: number;
-        outbound: number;
-      }
-    >();
+    const first = from.startOf(unit);
+    const last = (period.to ? to.subtract(1, 'millisecond') : to).startOf(unit);
+    const buckets = new Map<number, { timestamp: Date; inbound: number; outbound: number }>();
 
-    for (const event of events) {
-      const hour = event.timestamp.startOf('hour');
-      const key = hour.toISOString();
-
-      const bucket = buckets.get(key) ?? {
-        timestamp: hour,
+    // Fill the range with empty hourly or daily buckets before counting contacts.
+    for (
+      let bucketStart = first;
+      !bucketStart.isAfter(last);
+      bucketStart = bucketStart.add(1, unit)
+    ) {
+      buckets.set(bucketStart.valueOf(), {
+        timestamp: bucketStart.toDate(),
         inbound: 0,
         outbound: 0,
-      };
-
-      if (event.direction === 'Inbound') {
-        bucket.inbound++;
-      } else if (event.direction === 'Outbound') {
-        bucket.outbound++;
-      }
-
-      buckets.set(key, bucket);
-    }
-
-    const firstHour = events.at(0)!.timestamp.startOf('hour');
-    const lastHour = events.at(-1)!.timestamp.startOf('hour');
-
-    let inbound = 0;
-    let outbound = 0;
-
-    const result: {
-      timestamp: Date;
-      inbound: number;
-      outbound: number;
-    }[] = [];
-
-    for (
-      let hour = firstHour;
-      hour.isBefore(lastHour) || hour.isSame(lastHour);
-      hour = hour.add(1, 'hour')
-    ) {
-      const bucket = buckets.get(hour.toISOString());
-
-      inbound += bucket?.inbound ?? 0;
-      outbound += bucket?.outbound ?? 0;
-
-      result.push({
-        timestamp: hour.toDate(),
-        inbound,
-        outbound,
       });
     }
 
-    // Extend to show the last data point
-    result.push({
-      timestamp: lastHour.add(1, 'hour').toDate(),
-      inbound,
-      outbound,
-    });
+    for (const event of events) {
+      const bucket = buckets.get(event.timestamp.startOf(unit).valueOf())!;
 
-    return result;
+      if (event.direction === 'Inbound') {
+        bucket.inbound++;
+      } else {
+        bucket.outbound++;
+      }
+    }
+
+    return [...buckets.values()];
   });
 
   readonly chartOptions = computed<EChartsOption>(() => {
     const data = this.chartData();
+    const hourly = this.aggregation() === 'hour';
+    const axisLabels = data.map((bucket, index) => {
+      const timestamp = dayjs(bucket.timestamp);
+      if (!hourly) {
+        return timestamp.format('DD.MM.');
+      }
+
+      const showDate = index === 0 || timestamp.hour() === 0;
+      return timestamp.format(showDate ? 'DD.MM.' : 'HH:mm');
+    });
 
     return {
       title: {
-        text: 'Contacts over time',
-        subtext: 'Cumulative communication volume by hour',
+        text: 'Kontaktaufkommen im Zeitverlauf',
+        subtext: hourly
+          ? 'Eingehende und ausgehende Kontakte pro Stunde'
+          : 'Eingehende und ausgehende Kontakte pro Tag',
         left: 0,
         top: 0,
         textStyle: {
@@ -128,16 +110,42 @@ export class ContactsOverTimeComponent {
         },
         subtextStyle: {
           fontSize: 12,
-          color: '#888',
+          color: '#595959',
         },
       },
 
       tooltip: {
         trigger: 'axis',
+        renderMode: 'richText',
+        axisPointer: { type: 'shadow' },
+        formatter: (params) => {
+          const item = Array.isArray(params) ? params[0] : params;
+          const bucket = data[item.dataIndex];
+          if (!bucket) {
+            return '';
+          }
+
+          const date = bucket.timestamp.toLocaleDateString('de-DE', {
+            weekday: 'long',
+            day: '2-digit',
+            month: 'long',
+          });
+          const lines = [date];
+          if (hourly) {
+            const start = dayjs(bucket.timestamp);
+            lines.push(`${start.format('HH:mm')}–${start.add(1, 'hour').format('HH:mm')} Uhr`);
+          }
+          lines.push(
+            `Eingehend: ${bucket.inbound.toLocaleString('de-DE')}`,
+            `Ausgehend: ${bucket.outbound.toLocaleString('de-DE')}`,
+            `Gesamt: ${(bucket.inbound + bucket.outbound).toLocaleString('de-DE')}`,
+          );
+          return lines.join('\n');
+        },
       },
 
       legend: {
-        top: 5,
+        top: 52,
         right: 0,
       },
 
@@ -145,20 +153,15 @@ export class ContactsOverTimeComponent {
         outerBounds: {
           left: 20,
           right: 20,
-          top: 70,
-          bottom: 35,
+          top: 90,
+          bottom: 45,
         },
       },
 
       xAxis: {
         type: 'category',
-        data: data.map((x) =>
-          x.timestamp.toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit',
-          }),
-        ),
-        boundaryGap: false,
+        data: axisLabels,
+        boundaryGap: true,
         axisLine: {
           show: false,
         },
@@ -166,13 +169,15 @@ export class ContactsOverTimeComponent {
           show: false,
         },
         axisLabel: {
-          color: '#777',
+          color: '#595959',
+          hideOverlap: true,
         },
       },
 
       yAxis: {
         type: 'value',
-        name: 'Contacts',
+        name: 'Kontakte',
+        min: 0,
         nameLocation: 'middle',
         nameGap: 35,
         minInterval: 1,
@@ -183,7 +188,7 @@ export class ContactsOverTimeComponent {
           show: false,
         },
         axisLabel: {
-          color: '#777',
+          color: '#595959',
         },
         splitLine: {
           lineStyle: {
@@ -195,27 +200,23 @@ export class ContactsOverTimeComponent {
 
       series: [
         {
-          name: 'Inbound',
-          type: 'line',
+          name: 'Eingehend',
+          type: 'bar',
           data: data.map((x) => x.inbound),
           stack: 'contacts',
-          symbol: 'none',
-          smooth: false,
-          step: 'end',
-          areaStyle: {},
+          barMaxWidth: 28,
+          itemStyle: { color: '#5273e8' },
           emphasis: {
             focus: 'series',
           },
         },
         {
-          name: 'Outbound',
-          type: 'line',
+          name: 'Ausgehend',
+          type: 'bar',
           data: data.map((x) => x.outbound),
           stack: 'contacts',
-          symbol: 'none',
-          smooth: false,
-          step: 'end',
-          areaStyle: {},
+          barMaxWidth: 28,
+          itemStyle: { color: '#afd32a' },
           emphasis: {
             focus: 'series',
           },
