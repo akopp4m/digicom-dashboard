@@ -4,25 +4,25 @@ public sealed class CommunicationEvent
 {
     public long Id { get; set; }
 
-    public DateTime Timestamp { get; set; }
+    public required DateTime Timestamp { get; set; }
 
-    public CommunicationDirection Direction { get; set; }
+    public required CommunicationDirection Direction { get; set; }
 
-    public CommunicationChannel Channel { get; set; }
+    public required CommunicationChannel Channel { get; set; }
 
     public required string CustomerId { get; set; }
 
     public required string Department { get; set; }
 
-    public required string Agent { get; set; }
+    public required int Agent { get; set; }
 
     public required string CallerNumber { get; set; }
 
-    public int DurationSeconds { get; set; }
+    public required int DurationSeconds { get; set; }
 
-    public int WaitingTimeSeconds { get; set; }
+    public required int WaitingTimeSeconds { get; set; }
 
-    public CommunicationStatus Status { get; set; }
+    public required CommunicationStatus Status { get; set; }
 
-    public int QualityScore { get; set; }
+    public int? QualityScore { get; set; }
 }

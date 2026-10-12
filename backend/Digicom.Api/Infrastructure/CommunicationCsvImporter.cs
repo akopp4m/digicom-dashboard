@@ -76,10 +76,14 @@ public sealed class CommunicationCsvImporter(
                 item.Timestamp == default
                 || string.IsNullOrWhiteSpace(item.CustomerId)
                 || string.IsNullOrWhiteSpace(item.Department)
-                || string.IsNullOrWhiteSpace(item.Agent)
                 || string.IsNullOrWhiteSpace(item.CallerNumber)
             )
-                throw new InvalidDataException("All communication fields are required.");
+                throw new InvalidDataException(
+                    "Timestamp, customer ID, department and caller number are required."
+                );
+
+            if (item.Agent <= 0)
+                throw new InvalidDataException("Agent ID must be positive.");
 
             if (
                 !Enum.IsDefined(item.Direction)

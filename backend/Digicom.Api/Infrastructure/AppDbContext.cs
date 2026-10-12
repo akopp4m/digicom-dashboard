@@ -23,7 +23,7 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 
             entity.Property(e => e.Department).HasMaxLength(100).IsRequired();
 
-            entity.Property(e => e.Agent).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.Agent).IsRequired();
 
             entity.Property(e => e.CallerNumber).HasMaxLength(30).IsRequired();
 

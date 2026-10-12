@@ -80,7 +80,7 @@ public sealed record CommunicationEventResponse(
     DateTime Timestamp,
     string Direction,
     int WaitingTimeSeconds,
-    int QualityScore
+    int? QualityScore
 );
 
 public sealed record DepartmentStatisticsResponse(

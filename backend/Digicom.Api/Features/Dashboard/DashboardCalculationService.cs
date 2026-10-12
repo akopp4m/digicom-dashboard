@@ -110,13 +110,18 @@ public sealed class DashboardCalculationService
     internal static double CalculateAverageQualityScore(IEnumerable<CommunicationEvent> events)
     {
         return events
-            .Where(e => e.Status == CommunicationStatus.Answered)
-            .Select(e => e.QualityScore)
-            .DefaultIfEmpty(0)
-            .Average();
+                .Where(e =>
+                    e.Direction == CommunicationDirection.Inbound
+                    && e.Status == CommunicationStatus.Answered
+                )
+                .Average(e => e.QualityScore)
+            ?? 0;
     }
 
-    internal static double CalculateReachabilityRate(IEnumerable<CommunicationEvent> events, int inbound)
+    internal static double CalculateReachabilityRate(
+        IEnumerable<CommunicationEvent> events,
+        int inbound
+    )
     {
         int answeredInbound = events.Count(e =>
             e.Direction == CommunicationDirection.Inbound
