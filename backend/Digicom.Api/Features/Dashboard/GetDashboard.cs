@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using Digicom.Api.Infrastructure;
 using Digicom.Api.Infrastructure.Entities;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -51,14 +52,14 @@ public static class GetDashboard
             query = query.Where(e => e.Timestamp < to.Value);
         }
 
-        List<CommunicationEvent> events = await query.ToListAsync(cancellationToken);
+        CommunicationEvent[] events = await query.ToArrayAsync(cancellationToken);
 
         DashboardResponse response = Calculate(events);
 
         return TypedResults.Ok(response);
     }
 
-    private static DashboardResponse Calculate(List<CommunicationEvent> events)
+    private static DashboardResponse Calculate(IReadOnlyCollection<CommunicationEvent> events)
     {
         int total = events.Count;
 
@@ -77,7 +78,7 @@ public static class GetDashboard
                 AverageQualityScore: 0,
                 ReachabilityRate: 0,
                 CommunicationEvents: [],
-                DepartmentWaitingTimes: []
+                DepartmentStatistics: []
             );
         }
 
@@ -93,26 +94,26 @@ public static class GetDashboard
 
         int failed = events.Count(e => e.Status == CommunicationStatus.Failed);
 
-        List<CommunicationEvent> answeredCalls = events
+        CommunicationEvent[] answeredCalls = events
             .Where(e => e.Status == CommunicationStatus.Answered)
-            .ToList();
+            .ToArray();
 
-        List<CommunicationEvent> inboundCalls = events
+        CommunicationEvent[] inboundCalls = events
             .Where(e => e.Direction == CommunicationDirection.Inbound)
-            .ToList();
+            .ToArray();
 
         double averageDuration = answeredCalls
-            .Select(e => (double)e.DurationSeconds)
+            .Select(e => e.DurationSeconds)
             .DefaultIfEmpty(0)
             .Average();
 
         double averageWaitingTime = inboundCalls
-            .Select(e => (double)e.WaitingTimeSeconds)
+            .Select(e => e.WaitingTimeSeconds)
             .DefaultIfEmpty(0)
             .Average();
 
         double averageQualityScore = answeredCalls
-            .Select(e => (double)e.QualityScore)
+            .Select(e => e.QualityScore)
             .DefaultIfEmpty(0)
             .Average();
 
@@ -128,11 +129,21 @@ public static class GetDashboard
             ))
             .ToArray();
 
-        DepartmentWaitingTimeResponse[] departmentWaitingTimes = inboundCalls
+        DepartmentStatisticsResponse[] departmentStatistics = events
             .GroupBy(e => e.Department)
-            .Select(g => new DepartmentWaitingTimeResponse(
+            .Select(g => new DepartmentStatisticsResponse(
                 Department: g.Key,
-                AverageWaitingTimeSeconds: g.Average(e => e.WaitingTimeSeconds)
+                AverageWaitingTimeSeconds: g.Where(e =>
+                        e.Direction == CommunicationDirection.Inbound
+                    )
+                    .Select(e => e.WaitingTimeSeconds)
+                    .DefaultIfEmpty(0)
+                    .Average(),
+                AverageQualityScore: g.Where(e => e.Status == CommunicationStatus.Answered)
+                    .Select(e => e.QualityScore)
+                    .DefaultIfEmpty(0)
+                    .Average(),
+                ContactAmount: g.Count()
             ))
             .OrderByDescending(x => x.AverageWaitingTimeSeconds)
             .ToArray();
@@ -150,7 +161,7 @@ public static class GetDashboard
             AverageQualityScore: averageQualityScore,
             ReachabilityRate: reachabilityRate,
             CommunicationEvents: communicationEvents,
-            DepartmentWaitingTimes: departmentWaitingTimes
+            DepartmentStatistics: departmentStatistics
         );
     }
 }
@@ -168,7 +179,7 @@ public sealed record DashboardResponse(
     double AverageQualityScore,
     double ReachabilityRate,
     CommunicationEventResponse[] CommunicationEvents,
-    DepartmentWaitingTimeResponse[] DepartmentWaitingTimes
+    DepartmentStatisticsResponse[] DepartmentStatistics
 );
 
 public sealed record CommunicationEventResponse(
@@ -178,7 +189,9 @@ public sealed record CommunicationEventResponse(
     int QualityScore
 );
 
-public sealed record DepartmentWaitingTimeResponse(
+public sealed record DepartmentStatisticsResponse(
     string Department,
-    double AverageWaitingTimeSeconds
+    double AverageWaitingTimeSeconds,
+    double AverageQualityScore,
+    int ContactAmount
 );
