@@ -18,6 +18,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="Digicom.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="data/digicom_communications_600.csv" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 

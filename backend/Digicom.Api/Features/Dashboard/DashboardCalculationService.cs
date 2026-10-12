@@ -59,7 +59,7 @@ public sealed class DashboardCalculationService
         );
     }
 
-    private static int CountByDirection(
+    internal static int CountByDirection(
         IEnumerable<CommunicationEvent> events,
         CommunicationDirection direction
     )
@@ -67,7 +67,7 @@ public sealed class DashboardCalculationService
         return events.Count(e => e.Direction == direction);
     }
 
-    private static int CountByStatus(
+    internal static int CountByStatus(
         IEnumerable<CommunicationEvent> events,
         CommunicationStatus status
     )
@@ -89,7 +89,7 @@ public sealed class DashboardCalculationService
             .ToArray();
     }
 
-    private static double CalculateAverageDuration(IEnumerable<CommunicationEvent> events)
+    internal static double CalculateAverageDuration(IEnumerable<CommunicationEvent> events)
     {
         return events
             .Where(e => e.Status == CommunicationStatus.Answered)
@@ -98,7 +98,7 @@ public sealed class DashboardCalculationService
             .Average();
     }
 
-    private static double CalculateAverageWaitingTime(IEnumerable<CommunicationEvent> events)
+    internal static double CalculateAverageWaitingTime(IEnumerable<CommunicationEvent> events)
     {
         return events
             .Where(e => e.Direction == CommunicationDirection.Inbound)
@@ -107,7 +107,7 @@ public sealed class DashboardCalculationService
             .Average();
     }
 
-    private static double CalculateAverageQualityScore(IEnumerable<CommunicationEvent> events)
+    internal static double CalculateAverageQualityScore(IEnumerable<CommunicationEvent> events)
     {
         return events
             .Where(e => e.Status == CommunicationStatus.Answered)
@@ -116,7 +116,7 @@ public sealed class DashboardCalculationService
             .Average();
     }
 
-    private static double CalculateReachabilityRate(IEnumerable<CommunicationEvent> events, int inbound)
+    internal static double CalculateReachabilityRate(IEnumerable<CommunicationEvent> events, int inbound)
     {
         int answeredInbound = events.Count(e =>
             e.Direction == CommunicationDirection.Inbound
@@ -126,7 +126,7 @@ public sealed class DashboardCalculationService
         return inbound == 0 ? 0 : (double)answeredInbound / inbound * 100;
     }
 
-    private static DepartmentStatisticsResponse[] CalculateDepartmentStatistics(
+    internal static DepartmentStatisticsResponse[] CalculateDepartmentStatistics(
         IEnumerable<CommunicationEvent> events
     )
     {
