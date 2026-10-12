@@ -12,6 +12,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddScoped<CommunicationCsvImporter>();
+builder.Services.AddScoped<DashboardCalculationService>();
 
 var app = builder.Build();
 
