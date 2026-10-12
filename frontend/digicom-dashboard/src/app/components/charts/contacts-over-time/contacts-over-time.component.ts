@@ -12,6 +12,7 @@ import { CanvasRenderer } from 'echarts/renderers';
 import type { EChartsOption } from 'echarts';
 import dayjs from 'dayjs';
 import { CommunicationEventDTO } from '../../../models/dashboard.model';
+import type { PeriodDates } from '../../_shared/period-filter/period-filter.component';
 
 echarts.use([
   LineChart,
@@ -31,6 +32,7 @@ echarts.use([
 })
 export class ContactsOverTimeComponent {
   readonly data = input<CommunicationEventDTO[]>([]);
+  readonly period = input<PeriodDates>({ option: 'all' });
 
   readonly chartData = computed(() => {
     const events = [...this.data()]

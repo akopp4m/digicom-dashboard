@@ -32,6 +32,7 @@ export class DashboardComponent implements OnInit {
 
   public readonly dashboard = signal<DashboardDTO | undefined>(undefined);
   public readonly loading = signal<boolean>(true);
+  public readonly selectedPeriod = signal<PeriodDates>({ option: 'all' });
 
   private dashboardSubscription?: Subscription;
 
@@ -40,6 +41,7 @@ export class DashboardComponent implements OnInit {
   }
 
   onPeriodChange(event: PeriodDates) {
+    this.selectedPeriod.set(event);
     const { from, to } = event;
     this.loadDashboard(from?.toISOString(), to?.toISOString());
   }

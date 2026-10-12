@@ -42,6 +42,7 @@
     <app-contacts-over-time
       class="col-span-2"
       [data]="dashboard()!.communicationEvents"
+      [period]="selectedPeriod()"
     ></app-contacts-over-time>
   }
   @if (dashboard()?.departmentStatistics != null) {
