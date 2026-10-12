@@ -42,7 +42,7 @@ export class WaitingTimeByDepartmentComponent {
       grid: {
         left: 20,
         right: 80,
-        top: 20,
+        top: 5,
         bottom: 20,
         outerBoundsMode: 'same',
       },
