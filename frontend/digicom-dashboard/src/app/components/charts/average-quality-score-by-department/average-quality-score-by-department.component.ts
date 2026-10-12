@@ -2,13 +2,13 @@ import { Component, computed, input } from '@angular/core';
 import { NgxEchartsDirective, provideEchartsCore } from 'ngx-echarts';
 import * as echarts from 'echarts/core';
 import { BarChart } from 'echarts/charts';
-import { GridComponent, TitleComponent, TooltipComponent } from 'echarts/components';
+import { GridComponent, TooltipComponent } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
 import type { EChartsOption } from 'echarts';
 import type { DepartmentStatisticsDTO } from '../../../models/dashboard.model';
 import { departmentColor, departmentLabel, formatChartNumber } from '../department-chart.utils';
 
-echarts.use([BarChart, GridComponent, TitleComponent, TooltipComponent, CanvasRenderer]);
+echarts.use([BarChart, GridComponent, TooltipComponent, CanvasRenderer]);
 
 @Component({
   selector: 'app-average-quality-score-by-department',
@@ -37,33 +37,29 @@ export class AverageQualityScoreByDepartmentComponent {
     const data = [...this.data()].sort((a, b) => b.averageQualityScore - a.averageQualityScore);
 
     return {
-      title: {
-        text: 'Durchschnittlicher Qualitätsscore',
-        subtext: data.length ? 'Nach Abteilung' : 'Keine Daten verfügbar',
-        left: 0,
-        top: 0,
-        textStyle: { fontSize: 18, fontWeight: 600, color: '#333' },
-        subtextStyle: { fontSize: 12, color: '#595959' },
-      },
       tooltip: {
         trigger: 'axis',
-        renderMode: 'richText',
+        renderMode: 'html',
+        confine: true,
         axisPointer: { type: 'shadow' },
-        valueFormatter: (value) => formatChartNumber(Number(value), 1),
+        formatter: (params) => {
+          const item = Array.isArray(params) ? params[0] : params;
+          return `<strong>${echarts.format.encodeHTML(item.name)}</strong><br/>${item.marker}Durchschnittlicher Qualitätsscore: ${formatChartNumber(Number(item.value), 1)}`;
+        },
       },
       grid: {
-        outerBounds: { left: 20, right: 20, top: 65, bottom: 25 },
+        left: 20,
+        right: 80,
+        top: 20,
+        bottom: 20,
+        outerBoundsMode: 'same',
       },
       xAxis: {
         type: 'value',
-        name: 'Qualitätsscore',
-        nameLocation: 'middle',
-        nameGap: 30,
-        axisLine: { show: false },
-        axisTick: { show: false },
-        axisLabel: { color: '#595959', formatter: (value: number) => formatChartNumber(value, 1) },
-        splitLine: { lineStyle: { color: '#eee', type: 'dashed' } },
+        show: false,
+        splitLine: { show: false },
       },
+
       yAxis: {
         type: 'category',
         inverse: true,

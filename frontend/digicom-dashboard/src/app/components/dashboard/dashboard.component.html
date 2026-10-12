@@ -33,10 +33,39 @@
   }
 
   @if (dashboard()?.departmentStatistics != null) {
-    <app-waiting-time-by-department
-      class="col-span-2"
-      [data]="dashboard()!.departmentStatistics"
-    ></app-waiting-time-by-department>
+    <section class="col-span-full" aria-labelledby="department-overview-title">
+      <h2
+        id="department-overview-title"
+        class="mb-3 text-lg font-semibold tracking-tight text-gray-900"
+      >
+        Abteilungsübersicht
+      </h2>
+      <div class="flex flex-wrap gap-5">
+        <div class="min-w-0 flex-1 basis-full lg:basis-96">
+          <h3 class="mb-3 text-sm font-semibold text-gray-600">Durchschnittliche Wartezeit</h3>
+          <app-waiting-time-by-department
+            class="block h-63"
+            [data]="dashboard()!.departmentStatistics"
+          ></app-waiting-time-by-department>
+        </div>
+        <div class="min-w-0 flex-1 basis-full lg:basis-96">
+          <h3 class="mb-3 text-sm font-semibold text-gray-600">
+            Durchschnittlicher Qualitätsscore
+          </h3>
+          <app-average-quality-score-by-department
+            class="block h-63"
+            [data]="dashboard()!.departmentStatistics"
+          ></app-average-quality-score-by-department>
+        </div>
+        <div class="min-w-0 flex-1 basis-full lg:basis-96">
+          <h3 class="mb-3 text-sm font-semibold text-gray-600">Kontaktverteilung</h3>
+          <app-contacts-by-department
+            class="block h-63"
+            [data]="dashboard()!.departmentStatistics"
+          ></app-contacts-by-department>
+        </div>
+      </div>
+    </section>
   }
   @if (dashboard()?.communicationEvents != null) {
     <app-contacts-over-time
@@ -44,15 +73,5 @@
       [data]="dashboard()!.communicationEvents"
       [period]="selectedPeriod()"
     ></app-contacts-over-time>
-  }
-  @if (dashboard()?.departmentStatistics != null) {
-    <div class="col-span-full grid grid-cols-2 gap-5">
-      <app-average-quality-score-by-department
-        [data]="dashboard()!.departmentStatistics"
-      ></app-average-quality-score-by-department>
-      <app-contacts-by-department
-        [data]="dashboard()!.departmentStatistics"
-      ></app-contacts-by-department>
-    </div>
   }
 </div>

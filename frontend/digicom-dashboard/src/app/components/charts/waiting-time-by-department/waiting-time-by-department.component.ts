@@ -2,13 +2,13 @@ import { Component, input, computed } from '@angular/core';
 import { NgxEchartsDirective, provideEchartsCore } from 'ngx-echarts';
 import * as echarts from 'echarts/core';
 import { BarChart } from 'echarts/charts';
-import { GridComponent, TooltipComponent, TitleComponent } from 'echarts/components';
+import { GridComponent, TooltipComponent } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
 import type { EChartsOption } from 'echarts';
 import { DepartmentStatisticsDTO } from '../../../models/dashboard.model';
 import { departmentColor, departmentLabel, formatChartNumber } from '../department-chart.utils';
 
-echarts.use([BarChart, GridComponent, TooltipComponent, TitleComponent, CanvasRenderer]);
+echarts.use([BarChart, GridComponent, TooltipComponent, CanvasRenderer]);
 
 @Component({
   selector: 'app-waiting-time-by-department',
@@ -26,63 +26,30 @@ export class WaitingTimeByDepartmentComponent {
     );
 
     return {
-      title: {
-        text: 'Durchschnittliche Wartezeit',
-        subtext: 'Nach Abteilung',
-        left: 0,
-        top: 0,
-        textStyle: {
-          fontSize: 18,
-          fontWeight: 600,
-        },
-        subtextStyle: {
-          fontSize: 12,
-          color: '#888',
-        },
-      },
-
       tooltip: {
         trigger: 'axis',
-        renderMode: 'richText',
+        renderMode: 'html',
+        confine: true,
         axisPointer: {
           type: 'shadow',
         },
         formatter: (params) => {
           const item = Array.isArray(params) ? params[0] : params;
-          return `${item.name}\nDurchschnittliche Wartezeit: ${formatChartNumber(Number(item.value), 2)} s`;
+          return `<strong>${echarts.format.encodeHTML(item.name)}</strong><br/>${item.marker}Durchschnittliche Wartezeit: ${formatChartNumber(Number(item.value), 2)} s`;
         },
       },
 
       grid: {
-        outerBounds: {
-          left: 20,
-          right: 20,
-          top: 65,
-          bottom: 25,
-        },
+        left: 20,
+        right: 80,
+        top: 20,
+        bottom: 20,
+        outerBoundsMode: 'same',
       },
-
       xAxis: {
         type: 'value',
-        name: 'Sekunden',
-        nameLocation: 'middle',
-        nameGap: 30,
-        axisLine: {
-          show: false,
-        },
-        axisTick: {
-          show: false,
-        },
-        axisLabel: {
-          color: '#777',
-          formatter: (value: number) => `${formatChartNumber(value, 2)} s`,
-        },
-        splitLine: {
-          lineStyle: {
-            color: '#eee',
-            type: 'dashed',
-          },
-        },
+        show: false,
+        splitLine: { show: false },
       },
 
       yAxis: {

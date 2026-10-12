@@ -2,13 +2,13 @@ import { Component, computed, input } from '@angular/core';
 import { NgxEchartsDirective, provideEchartsCore } from 'ngx-echarts';
 import * as echarts from 'echarts/core';
 import { PieChart } from 'echarts/charts';
-import { TitleComponent, TooltipComponent } from 'echarts/components';
+import { TooltipComponent } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
 import type { EChartsOption } from 'echarts';
 import type { DepartmentStatisticsDTO } from '../../../models/dashboard.model';
 import { departmentColor, departmentLabel, formatChartNumber } from '../department-chart.utils';
 
-echarts.use([PieChart, TitleComponent, TooltipComponent, CanvasRenderer]);
+echarts.use([PieChart, TooltipComponent, CanvasRenderer]);
 
 @Component({
   selector: 'app-contacts-by-department',
@@ -40,29 +40,22 @@ export class ContactsByDepartmentComponent {
       formatChartNumber(total > 0 ? (value / total) * 100 : 0, 1);
 
     return {
-      title: {
-        text: 'Kontaktverteilung',
-        subtext: total > 0 ? 'Nach Abteilung' : 'Keine Kontakte verfügbar',
-        left: 0,
-        top: 0,
-        textStyle: { fontSize: 18, fontWeight: 600, color: '#333' },
-        subtextStyle: { fontSize: 12, color: '#595959' },
-      },
       tooltip: {
         trigger: 'item',
-        renderMode: 'richText',
+        renderMode: 'html',
+        confine: true,
         formatter: (params) => {
           const item = Array.isArray(params) ? params[0] : params;
           const value = Number(item.value);
-          return `${item.name}\n${formatChartNumber(value, 0)} Kontakte (${percentage(value)} %)`;
+          return `<strong>${echarts.format.encodeHTML(item.name)}</strong><br/>${item.marker}Kontakte: ${formatChartNumber(value, 0)} (${percentage(value)} %)`;
         },
       },
       series: [
         {
           name: 'Kontakte',
           type: 'pie',
-          radius: ['40%', '65%'],
-          center: ['50%', '58%'],
+          radius: ['26%', '64%'],
+          center: ['50%', '50%'],
           stillShowZeroSum: false,
           data: data.map((item) => ({
             name: departmentLabel(item.department),
@@ -72,12 +65,14 @@ export class ContactsByDepartmentComponent {
           itemStyle: { borderColor: '#fff', borderWidth: 2, borderRadius: 4 },
           label: {
             show: total > 0,
+            position: 'outside',
+            bleedMargin: 5,
+            overflow: 'break',
             formatter: (params) => `${params.name}\n${percentage(Number(params.value))} %`,
             color: '#444',
             fontSize: 12,
           },
-          labelLine: { show: total > 0 },
-          labelLayout: { hideOverlap: true },
+          labelLine: { show: total > 0, length: 5, length2: 5 },
           emphasis: { scale: true },
           animationDuration: 600,
           animationEasing: 'cubicOut',
