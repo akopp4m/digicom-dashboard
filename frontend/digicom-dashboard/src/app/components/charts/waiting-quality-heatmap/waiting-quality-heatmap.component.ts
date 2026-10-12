@@ -51,11 +51,11 @@ interface HeatmapCell {
 @Component({
   imports: [NgxEchartsDirective],
   providers: [provideEchartsCore({ echarts })],
-  selector: 'app-waiting-quality-scatter',
-  styleUrl: './waiting-quality-scatter.component.css',
-  templateUrl: './waiting-quality-scatter.component.html',
+  selector: 'app-waiting-quality-heatmap',
+  styleUrl: './waiting-quality-heatmap.component.css',
+  templateUrl: './waiting-quality-heatmap.component.html',
 })
-export class WaitingQualityScatterComponent {
+export class WaitingQualityHeatmapComponent {
   readonly data = input<CommunicationEventDTO[]>([]);
 
   readonly chartData = computed<HeatmapCell[]>(() => {
