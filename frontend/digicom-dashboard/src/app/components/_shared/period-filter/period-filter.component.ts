@@ -1,5 +1,5 @@
 import { Component, output } from '@angular/core';
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs/esm';
 
 export type PeriodOption = 'all' | 'today' | 'yesterday' | '7d' | '30d';
 export type PeriodDates =

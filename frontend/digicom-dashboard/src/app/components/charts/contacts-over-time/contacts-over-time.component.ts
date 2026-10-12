@@ -10,7 +10,7 @@ import {
 } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
 import type { EChartsOption } from 'echarts';
-import dayjs from 'dayjs';
+import dayjs from 'dayjs/esm';
 import { CommunicationEventDTO } from '../../../models/dashboard.model';
 import type { PeriodDates } from '../../_shared/period-filter/period-filter.component';
 
