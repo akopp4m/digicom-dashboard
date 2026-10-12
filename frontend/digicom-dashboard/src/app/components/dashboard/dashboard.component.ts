@@ -41,25 +41,27 @@ export class DashboardComponent implements OnInit {
   }
 
   onPeriodChange(event: PeriodDates) {
-    this.selectedPeriod.set(event);
-    const { from, to } = event;
-    this.loadDashboard(from?.toISOString(), to?.toISOString());
+    this.loadDashboard(event);
   }
 
-  private loadDashboard(from?: string, to?: string): void {
+  private loadDashboard(period: PeriodDates = { option: 'all' }): void {
     this.dashboardSubscription?.unsubscribe();
     this.loading.set(true);
 
-    this.dashboardSubscription = this.dashboardService.getDashboard(from, to).subscribe({
-      next: (dashboard) => {
-        console.log(dashboard);
-        this.dashboard.set(dashboard);
-        this.loading.set(false);
-      },
-      error: (error) => {
-        console.error(error);
-        this.loading.set(false);
-      },
-    });
+    const { from, to } = period;
+    this.dashboardSubscription = this.dashboardService
+      .getDashboard(from?.toISOString(), to?.toISOString())
+      .subscribe({
+        next: (dashboard) => {
+          console.log(dashboard);
+          this.selectedPeriod.set(period);
+          this.dashboard.set(dashboard);
+          this.loading.set(false);
+        },
+        error: (error) => {
+          console.error(error);
+          this.loading.set(false);
+        },
+      });
   }
 }
