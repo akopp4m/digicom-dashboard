@@ -7,7 +7,7 @@ namespace Digicom.Tests;
 
 public sealed class CommunicationCsvImporterTests
 {
-    [Fact]
+    [Test]
     public async Task ImportsAllEventsAndShiftsDatesTogether()
     {
         await using var connection = new SqliteConnection("Data Source=:memory:");
@@ -20,14 +20,17 @@ public sealed class CommunicationCsvImporterTests
         await importer.ImportIfEmptyAsync(DatasetPath);
 
         var events = await db.CommunicationEvents.AsNoTracking().ToListAsync();
-        Assert.Equal(600, events.Count);
-        Assert.Equal(today, events.Max(x => x.Timestamp).Date);
-        Assert.Equal(TimeSpan.FromDays(25),
-            events.Max(x => x.Timestamp).Date - events.Min(x => x.Timestamp).Date);
-        Assert.All(events, item => Assert.True(item.Id > 0));
+        await Assert.That(events.Count).IsEqualTo(600);
+        await Assert.That(events.Max(x => x.Timestamp).Date).IsEqualTo(today);
+        await Assert.That(events.Max(x => x.Timestamp).Date - events.Min(x => x.Timestamp).Date)
+            .IsEqualTo(TimeSpan.FromDays(25));
+        foreach (var item in events)
+        {
+            await Assert.That(item.Id).IsGreaterThan(0);
+        }
     }
 
-    [Fact]
+    [Test]
     public async Task SkipsImportWhenDatabaseAlreadyContainsEvents()
     {
         await using var connection = new SqliteConnection("Data Source=:memory:");
@@ -40,10 +43,10 @@ public sealed class CommunicationCsvImporterTests
         // A missing file proves that a repeated import skips reading the CSV entirely.
         await importer.ImportIfEmptyAsync(Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".csv"));
 
-        Assert.Equal(600, await db.CommunicationEvents.CountAsync());
+        await Assert.That(await db.CommunicationEvents.CountAsync()).IsEqualTo(600);
     }
 
-    [Fact]
+    [Test]
     public async Task RejectsInvalidCsvWithoutInsertingAnyEvents()
     {
         await using var connection = new SqliteConnection("Data Source=:memory:");
@@ -58,8 +61,9 @@ public sealed class CommunicationCsvImporterTests
             "2026-09-14T08:36:10,outbound,phone,CUST-2,Sales,31,+436760000001,60,10,answered,4\n");
         try
         {
-            await Assert.ThrowsAsync<InvalidDataException>(() => importer.ImportIfEmptyAsync(path));
-            Assert.Equal(0, await db.CommunicationEvents.CountAsync());
+            await Assert.That(() => importer.ImportIfEmptyAsync(path))
+                .Throws<InvalidDataException>();
+            await Assert.That(await db.CommunicationEvents.CountAsync()).IsEqualTo(0);
         }
         finally
         {
