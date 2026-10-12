@@ -2,13 +2,13 @@
   <h2 class="text-lg font-semibold tracking-tight text-gray-900">
     Wartezeit und Gesprächsqualität
   </h2>
-  <p class="mt-1 text-xs text-gray-600">Anteil je Bewertung innerhalb der Wartezeitgruppe</p>
+  <p class="mt-1 text-xs text-gray-600">Anteil je Bewertung unter bewerteten Kontakten</p>
   <div
     echarts
     [options]="chartOptions()"
     class="min-h-0 w-full flex-1"
     role="img"
-    aria-label="Wartezeit und Gesprächsqualität eingehender Kontakte. Jede Bewertung hat eine eigene Farbe. Dunklere Zellen zeigen höhere Anteile je Wartezeitgruppe. Ein Strich kennzeichnet Gruppen ohne Kontakte."
+    aria-label="Wartezeit und Gesprächsqualität bewerteter eingehender Kontakte. Jede Bewertung hat eine eigene Farbe. Dunklere Zellen zeigen höhere Anteile unter bewerteten Kontakten je Wartezeitgruppe. Ein Strich kennzeichnet Gruppen ohne bewertete Kontakte."
   ></div>
   <p class="mt-1 text-center text-xs text-gray-600">Dunkler = höherer Anteil</p>
 </div>
