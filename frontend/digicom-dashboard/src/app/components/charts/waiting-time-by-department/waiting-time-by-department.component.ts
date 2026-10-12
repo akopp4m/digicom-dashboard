@@ -6,6 +6,7 @@ import { GridComponent, TooltipComponent, TitleComponent } from 'echarts/compone
 import { CanvasRenderer } from 'echarts/renderers';
 import type { EChartsOption } from 'echarts';
 import { DepartmentStatisticsDTO } from '../../../models/dashboard.model';
+import { departmentColor, departmentLabel, formatChartNumber } from '../department-chart.utils';
 
 echarts.use([BarChart, GridComponent, TooltipComponent, TitleComponent, CanvasRenderer]);
 
@@ -42,15 +43,13 @@ export class WaitingTimeByDepartmentComponent {
 
       tooltip: {
         trigger: 'axis',
+        renderMode: 'richText',
         axisPointer: {
           type: 'shadow',
         },
         formatter: (params) => {
           const item = Array.isArray(params) ? params[0] : params;
-          return `
-          <strong>${item.name}</strong><br />
-          Durchschnittliche Wartezeit: <strong>${item.value} s</strong>
-        `;
+          return `${item.name}\nDurchschnittliche Wartezeit: ${formatChartNumber(Number(item.value), 2)} s`;
         },
       },
 
@@ -76,7 +75,7 @@ export class WaitingTimeByDepartmentComponent {
         },
         axisLabel: {
           color: '#777',
-          formatter: '{value}s',
+          formatter: (value: number) => `${formatChartNumber(value, 2)} s`,
         },
         splitLine: {
           lineStyle: {
@@ -89,7 +88,7 @@ export class WaitingTimeByDepartmentComponent {
       yAxis: {
         type: 'category',
         inverse: true,
-        data: data.map((x) => x.department),
+        data: data.map((x) => departmentLabel(x.department)),
         axisLine: {
           show: false,
         },
@@ -105,7 +104,10 @@ export class WaitingTimeByDepartmentComponent {
       series: [
         {
           type: 'bar',
-          data: data.map((x) => x.averageWaitingTimeSeconds),
+          data: data.map((x) => ({
+            value: x.averageWaitingTimeSeconds,
+            itemStyle: { color: departmentColor(x.department) },
+          })),
 
           barMaxWidth: 28,
           barMinHeight: 4,
@@ -117,7 +119,7 @@ export class WaitingTimeByDepartmentComponent {
           label: {
             show: true,
             position: 'right',
-            formatter: '{c}s',
+            formatter: (params) => `${formatChartNumber(Number(params.value), 2)} s`,
             fontSize: 12,
             fontWeight: 600,
           },

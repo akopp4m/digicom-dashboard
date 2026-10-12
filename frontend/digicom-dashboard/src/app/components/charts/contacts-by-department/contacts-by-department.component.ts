@@ -6,6 +6,7 @@ import { TitleComponent, TooltipComponent } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
 import type { EChartsOption } from 'echarts';
 import type { DepartmentStatisticsDTO } from '../../../models/dashboard.model';
+import { departmentColor, departmentLabel, formatChartNumber } from '../department-chart.utils';
 
 echarts.use([PieChart, TitleComponent, TooltipComponent, CanvasRenderer]);
 
@@ -24,7 +25,10 @@ export class ContactsByDepartmentComponent {
       'Kontaktverteilung nach Abteilung. ' +
       (this.data().length
         ? this.data()
-            .map((item) => `${item.department}: ${item.contactAmount} Kontakte`)
+            .map(
+              (item) =>
+                `${departmentLabel(item.department)}: ${formatChartNumber(item.contactAmount, 0)} Kontakte`,
+            )
             .join('; ')
         : 'Keine Daten verfügbar.'),
   );
@@ -32,6 +36,8 @@ export class ContactsByDepartmentComponent {
   readonly chartOptions = computed<EChartsOption>(() => {
     const data = [...this.data()].sort((a, b) => b.contactAmount - a.contactAmount);
     const total = data.reduce((sum, item) => sum + item.contactAmount, 0);
+    const percentage = (value: number) =>
+      formatChartNumber(total > 0 ? (value / total) * 100 : 0, 1);
 
     return {
       title: {
@@ -42,11 +48,14 @@ export class ContactsByDepartmentComponent {
         textStyle: { fontSize: 18, fontWeight: 600, color: '#333' },
         subtextStyle: { fontSize: 12, color: '#595959' },
       },
-      color: ['#2563eb', '#047857', '#b45309', '#7e22ce', '#be123c', '#0e7490'],
       tooltip: {
         trigger: 'item',
         renderMode: 'richText',
-        formatter: '{b}\n{c} Kontakte ({d} %)',
+        formatter: (params) => {
+          const item = Array.isArray(params) ? params[0] : params;
+          const value = Number(item.value);
+          return `${item.name}\n${formatChartNumber(value, 0)} Kontakte (${percentage(value)} %)`;
+        },
       },
       series: [
         {
@@ -55,11 +64,15 @@ export class ContactsByDepartmentComponent {
           radius: ['40%', '65%'],
           center: ['50%', '58%'],
           stillShowZeroSum: false,
-          data: data.map((item) => ({ name: item.department, value: item.contactAmount })),
+          data: data.map((item) => ({
+            name: departmentLabel(item.department),
+            value: item.contactAmount,
+            itemStyle: { color: departmentColor(item.department) },
+          })),
           itemStyle: { borderColor: '#fff', borderWidth: 2, borderRadius: 4 },
           label: {
             show: total > 0,
-            formatter: '{b}\n{d} %',
+            formatter: (params) => `${params.name}\n${percentage(Number(params.value))} %`,
             color: '#444',
             fontSize: 12,
           },

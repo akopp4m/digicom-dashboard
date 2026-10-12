@@ -6,6 +6,7 @@ import { GridComponent, TitleComponent, TooltipComponent } from 'echarts/compone
 import { CanvasRenderer } from 'echarts/renderers';
 import type { EChartsOption } from 'echarts';
 import type { DepartmentStatisticsDTO } from '../../../models/dashboard.model';
+import { departmentColor, departmentLabel, formatChartNumber } from '../department-chart.utils';
 
 echarts.use([BarChart, GridComponent, TitleComponent, TooltipComponent, CanvasRenderer]);
 
@@ -24,7 +25,10 @@ export class AverageQualityScoreByDepartmentComponent {
       'Durchschnittlicher Qualitätsscore nach Abteilung. ' +
       (this.data().length
         ? this.data()
-            .map((item) => `${item.department}: ${item.averageQualityScore}`)
+            .map(
+              (item) =>
+                `${departmentLabel(item.department)}: ${formatChartNumber(item.averageQualityScore, 1)}`,
+            )
             .join('; ')
         : 'Keine Daten verfügbar.'),
   );
@@ -45,7 +49,7 @@ export class AverageQualityScoreByDepartmentComponent {
         trigger: 'axis',
         renderMode: 'richText',
         axisPointer: { type: 'shadow' },
-        valueFormatter: (value) => `${value}`,
+        valueFormatter: (value) => formatChartNumber(Number(value), 1),
       },
       grid: {
         outerBounds: { left: 20, right: 20, top: 65, bottom: 25 },
@@ -57,13 +61,13 @@ export class AverageQualityScoreByDepartmentComponent {
         nameGap: 30,
         axisLine: { show: false },
         axisTick: { show: false },
-        axisLabel: { color: '#595959' },
+        axisLabel: { color: '#595959', formatter: (value: number) => formatChartNumber(value, 1) },
         splitLine: { lineStyle: { color: '#eee', type: 'dashed' } },
       },
       yAxis: {
         type: 'category',
         inverse: true,
-        data: data.map((item) => item.department),
+        data: data.map((item) => departmentLabel(item.department)),
         axisLine: { show: false },
         axisTick: { show: false },
         axisLabel: { color: '#444', fontSize: 13 },
@@ -72,14 +76,17 @@ export class AverageQualityScoreByDepartmentComponent {
         {
           name: 'Durchschnittlicher Qualitätsscore',
           type: 'bar',
-          data: data.map((item) => item.averageQualityScore),
+          data: data.map((item) => ({
+            value: item.averageQualityScore,
+            itemStyle: { color: departmentColor(item.department) },
+          })),
           barMaxWidth: 28,
           barMinHeight: 4,
-          itemStyle: { color: '#2563eb', borderRadius: [0, 6, 6, 0] },
+          itemStyle: { borderRadius: [0, 6, 6, 0] },
           label: {
             show: true,
             position: 'right',
-            formatter: '{c}',
+            formatter: (params) => formatChartNumber(Number(params.value), 1),
             fontSize: 12,
             fontWeight: 600,
             color: '#444',
