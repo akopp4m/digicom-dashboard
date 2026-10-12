@@ -27,21 +27,20 @@ public sealed class DashboardCalculationService
             );
         }
 
-        int inbound = events.Count(e => e.Direction == CommunicationDirection.Inbound);
-        int outbound = events.Count(e => e.Direction == CommunicationDirection.Outbound);
-        int answered = events.Count(e => e.Status == CommunicationStatus.Answered);
-        int missed = events.Count(e => e.Status == CommunicationStatus.Missed);
-        int abandoned = events.Count(e => e.Status == CommunicationStatus.Abandoned);
-        int failed = events.Count(e => e.Status == CommunicationStatus.Failed);
+        int inbound = CountByDirection(events, CommunicationDirection.Inbound);
+        int outbound = CountByDirection(events, CommunicationDirection.Outbound);
+        int answered = CountByStatus(events, CommunicationStatus.Answered);
+        int missed = CountByStatus(events, CommunicationStatus.Missed);
+        int abandoned = CountByStatus(events, CommunicationStatus.Abandoned);
+        int failed = CountByStatus(events, CommunicationStatus.Failed);
 
-        CommunicationEventResponse[] communicationEvents = events
-            .Select(e => new CommunicationEventResponse(
-                Timestamp: e.Timestamp,
-                Direction: e.Direction.ToString(),
-                WaitingTimeSeconds: e.WaitingTimeSeconds,
-                QualityScore: e.QualityScore
-            ))
-            .ToArray();
+        double averageDuration = CalculateAverageDuration(events);
+        double averageWaitingTime = CalculateAverageWaitingTime(events);
+        double averageQualityScore = CalculateAverageQualityScore(events);
+        double reachabilityRate = CalculateReachabilityRate(events, inbound);
+
+        CommunicationEventResponse[] communicationEvents = MapCommunicationEvents(events);
+        DepartmentStatisticsResponse[] departmentStatistics = CalculateDepartmentStatistics(events);
 
         return new DashboardResponse(
             TotalEvents: total,
@@ -51,13 +50,43 @@ public sealed class DashboardCalculationService
             MissedEvents: missed,
             AbandonedEvents: abandoned,
             FailedEvents: failed,
-            AverageDurationSeconds: CalculateAverageDuration(events),
-            AverageWaitingTimeSeconds: CalculateAverageWaitingTime(events),
-            AverageQualityScore: CalculateAverageQualityScore(events),
-            ReachabilityRate: CalculateReachabilityRate(events, inbound),
+            AverageDurationSeconds: averageDuration,
+            AverageWaitingTimeSeconds: averageWaitingTime,
+            AverageQualityScore: averageQualityScore,
+            ReachabilityRate: reachabilityRate,
             CommunicationEvents: communicationEvents,
-            DepartmentStatistics: CalculateDepartmentStatistics(events)
+            DepartmentStatistics: departmentStatistics
         );
+    }
+
+    private static int CountByDirection(
+        IEnumerable<CommunicationEvent> events,
+        CommunicationDirection direction
+    )
+    {
+        return events.Count(e => e.Direction == direction);
+    }
+
+    private static int CountByStatus(
+        IEnumerable<CommunicationEvent> events,
+        CommunicationStatus status
+    )
+    {
+        return events.Count(e => e.Status == status);
+    }
+
+    private static CommunicationEventResponse[] MapCommunicationEvents(
+        IEnumerable<CommunicationEvent> events
+    )
+    {
+        return events
+            .Select(e => new CommunicationEventResponse(
+                Timestamp: e.Timestamp,
+                Direction: e.Direction.ToString(),
+                WaitingTimeSeconds: e.WaitingTimeSeconds,
+                QualityScore: e.QualityScore
+            ))
+            .ToArray();
     }
 
     private static double CalculateAverageDuration(IEnumerable<CommunicationEvent> events)
