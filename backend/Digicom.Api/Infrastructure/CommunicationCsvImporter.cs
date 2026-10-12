@@ -97,6 +97,9 @@ public sealed class CommunicationCsvImporter(
             if (item.Direction == CommunicationDirection.Outbound && item.WaitingTimeSeconds != 0)
                 throw new InvalidDataException("Outbound calls must have zero waiting time.");
 
+            if (item.Direction == CommunicationDirection.Outbound && item.QualityScore.HasValue)
+                throw new InvalidDataException("Outbound calls must not have a quality score.");
+
             if (item.DurationSeconds < 0 || item.WaitingTimeSeconds < 0)
                 throw new InvalidDataException("Duration and waiting time must be non-negative.");
 
