@@ -44,9 +44,7 @@ public sealed class DashboardIntegrationTests
     {
         await using var setup = await CreateTestSetupAsync();
 
-        using var response = await setup.Client.GetAsync(
-            $"/api/dashboard?from={setup.From:O}"
-        );
+        using var response = await setup.Client.GetAsync($"/api/dashboard?from={setup.From:O}");
 
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.BadRequest);
         var message = await response.Content.ReadFromJsonAsync<string>();
@@ -57,6 +55,7 @@ public sealed class DashboardIntegrationTests
     {
         var from = new DateTime(2026, 1, 1, 12, 0, 0, DateTimeKind.Utc);
         var connection = new SqliteConnection("Data Source=:memory:");
+
         // Configure a test host for the real app, replacing its database configuration
         // with this in-memory connection. CreateClient() starts the app and test server.
         var factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
