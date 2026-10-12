@@ -15,12 +15,15 @@ export interface DashboardDTO {
   departmentStatistics: DepartmentStatisticsDTO[];
 }
 
-export interface CommunicationEventDTO {
+interface CommunicationEventBaseDTO {
   timestamp: string;
-  direction: 'Inbound' | 'Outbound';
   waitingTimeSeconds: number;
-  qualityScore: number;
 }
+
+export type CommunicationEventDTO = CommunicationEventBaseDTO &
+  (
+    { direction: 'Inbound'; qualityScore: number } | { direction: 'Outbound'; qualityScore?: never }
+  );
 
 export interface DepartmentStatisticsDTO {
   department: string;

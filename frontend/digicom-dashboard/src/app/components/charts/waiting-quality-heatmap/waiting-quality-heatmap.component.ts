@@ -198,7 +198,8 @@ export class WaitingQualityHeatmapComponent {
   private formatTooltip(cell: HeatmapCell, ratingColor: string): string {
     const waitingTime = this.formatWaitingTimeRange(cell.bandIndex);
     const marker = echarts.format.getTooltipMarker(ratingColor);
-    const percentage = cell.total > 0 ? `${formatNumber(cell.percentage, 1)} %` : 'Keine Kontakte';
+    const percentage =
+      cell.total > 0 ? `${formatNumber(cell.percentage, 1)} %` : 'Keine Bewertungen';
     const count = formatNumber(cell.count, 0);
     const total = formatNumber(cell.total, 0);
 
@@ -208,7 +209,7 @@ export class WaitingQualityHeatmapComponent {
       <div class="text-2xl font-semibold leading-tight">${percentage}</div>
       <div class="mt-1 text-gray-600">Anteil in dieser Wartezeitgruppe</div>
       <div class="mt-2.5 border-t border-gray-200 pt-2">
-        <strong>${count}</strong> von <strong>${total}</strong> Kontakten
+        <strong>${count}</strong> von <strong>${total}</strong> bewerteten Kontakten
       </div>
     `;
   }
