@@ -25,6 +25,15 @@ export const CHART_COLORS = {
   },
 } as const;
 
+export const CHART_TOOLTIP_STYLE = {
+  renderMode: 'html',
+  confine: true,
+  backgroundColor: CHART_COLORS.white,
+  borderColor: CHART_COLORS.border,
+  padding: 14,
+  textStyle: { color: CHART_COLORS.text, fontSize: 12 },
+} as const;
+
 export const CHART_ANIMATION = {
   animationDuration: 600,
   animationEasing: 'cubicOut',
@@ -86,7 +95,13 @@ export function formatDepartmentTooltip(
   metric: string,
   value: string,
 ): string {
-  return `<strong>${format.encodeHTML(department)}</strong><br/>${marker}${format.encodeHTML(metric)}: ${format.encodeHTML(value)}`;
+  return `
+    <div class="mb-2 text-sm font-semibold">${format.encodeHTML(department)}</div>
+    <div class="mb-2.5 text-gray-600">${marker}${format.encodeHTML(metric)}</div>
+    <div class="border-t border-gray-200 pt-2">
+      <div class="text-2xl font-semibold leading-tight">${format.encodeHTML(value)}</div>
+    </div>
+  `;
 }
 
 export function calculatePercentage(count: number, total: number): number {

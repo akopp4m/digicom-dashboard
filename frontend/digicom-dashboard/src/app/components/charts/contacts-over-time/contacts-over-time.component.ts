@@ -9,7 +9,13 @@ import type { EChartsOption } from 'echarts';
 import dayjs from 'dayjs/esm';
 import { CommunicationEventDTO } from '../../../models/dashboard.model';
 import type { PeriodDates } from '../../_shared/period-filter/period-filter.component';
-import { CHART_COLORS } from '../chart.utils';
+import { CHART_COLORS, CHART_TOOLTIP_STYLE } from '../chart.utils';
+
+interface ContactBucket {
+  timestamp: Date;
+  inbound: number;
+  outbound: number;
+}
 
 echarts.use([BarChart, GridComponent, LegendComponent, TooltipComponent, CanvasRenderer]);
 
@@ -45,7 +51,7 @@ export class ContactsOverTimeComponent {
 
     const first = rangeStart.startOf(unit);
     const last = (period.to ? rangeEnd.subtract(1, 'millisecond') : rangeEnd).startOf(unit);
-    const buckets = new Map<number, { timestamp: Date; inbound: number; outbound: number }>();
+    const buckets = new Map<number, ContactBucket>();
 
     // Fill the range with empty hourly or daily buckets before counting contacts.
     for (
@@ -88,8 +94,8 @@ export class ContactsOverTimeComponent {
 
     return {
       tooltip: {
+        ...CHART_TOOLTIP_STYLE,
         trigger: 'axis',
-        renderMode: 'richText',
         axisPointer: { type: 'shadow' },
         formatter: (params) => {
           const item = Array.isArray(params) ? params[0] : params;
@@ -98,22 +104,7 @@ export class ContactsOverTimeComponent {
             return '';
           }
 
-          const date = bucket.timestamp.toLocaleDateString('de-DE', {
-            weekday: 'long',
-            day: '2-digit',
-            month: 'long',
-          });
-          const lines = [date];
-          if (hourly) {
-            const start = dayjs(bucket.timestamp);
-            lines.push(`${start.format('HH:mm')}–${start.add(1, 'hour').format('HH:mm')} Uhr`);
-          }
-          lines.push(
-            `Eingehend: ${formatNumber(bucket.inbound, 0)}`,
-            `Ausgehend: ${formatNumber(bucket.outbound, 0)}`,
-            `Gesamt: ${formatNumber(bucket.inbound + bucket.outbound, 0)}`,
-          );
-          return lines.join('\n');
+          return this.formatTooltip(bucket, hourly);
         },
       },
 
@@ -199,4 +190,33 @@ export class ContactsOverTimeComponent {
       ],
     };
   });
+
+  private formatTooltip(bucket: ContactBucket, hourly: boolean): string {
+    const date = bucket.timestamp.toLocaleDateString('de-DE', {
+      weekday: 'long',
+      day: '2-digit',
+      month: 'long',
+    });
+    const start = dayjs(bucket.timestamp);
+    const interval = hourly
+      ? `<div class="mt-1 text-gray-600">${start.format('HH:mm')}–${start.add(1, 'hour').format('HH:mm')} Uhr</div>`
+      : '';
+    const inboundMarker = echarts.format.getTooltipMarker(CHART_COLORS.inbound);
+    const outboundMarker = echarts.format.getTooltipMarker(CHART_COLORS.outbound);
+
+    return `
+      <div class="text-sm font-semibold">${date}</div>
+      ${interval}
+      <div class="mt-2.5 flex justify-between gap-6">
+        <span>${inboundMarker}Eingehend</span><strong>${formatNumber(bucket.inbound)}</strong>
+      </div>
+      <div class="mt-1 flex justify-between gap-6">
+        <span>${outboundMarker}Ausgehend</span><strong>${formatNumber(bucket.outbound)}</strong>
+      </div>
+      <div class="mt-2.5 border-t border-gray-200 pt-2">
+        <div class="text-2xl font-semibold leading-tight">${formatNumber(bucket.inbound + bucket.outbound)}</div>
+        <div class="mt-1 text-gray-600">Kontakte gesamt</div>
+      </div>
+    `;
+  }
 }

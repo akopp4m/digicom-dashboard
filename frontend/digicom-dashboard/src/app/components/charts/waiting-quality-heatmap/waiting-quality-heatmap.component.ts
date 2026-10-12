@@ -12,7 +12,12 @@ import {
 import { CanvasRenderer } from 'echarts/renderers';
 import type { EChartsOption } from 'echarts';
 import type { CommunicationEventDTO } from '../../../models/dashboard.model';
-import { CHART_COLORS, calculatePercentage, contrastingTextColor } from '../chart.utils';
+import {
+  CHART_COLORS,
+  CHART_TOOLTIP_STYLE,
+  calculatePercentage,
+  contrastingTextColor,
+} from '../chart.utils';
 
 echarts.use([
   HeatmapChart,
@@ -99,13 +104,8 @@ export class WaitingQualityHeatmapComponent {
 
     return {
       tooltip: {
+        ...CHART_TOOLTIP_STYLE,
         trigger: 'item',
-        renderMode: 'html',
-        confine: true,
-        backgroundColor: CHART_COLORS.white,
-        borderColor: CHART_COLORS.border,
-        padding: 14,
-        textStyle: { color: CHART_COLORS.text, fontSize: 12 },
       },
       legend: {
         bottom: 0,

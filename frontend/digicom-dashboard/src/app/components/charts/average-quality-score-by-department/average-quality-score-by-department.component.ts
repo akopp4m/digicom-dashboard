@@ -9,6 +9,7 @@ import type { EChartsOption } from 'echarts';
 import type { DepartmentStatisticsDTO } from '../../../models/dashboard.model';
 import {
   CHART_COLORS,
+  CHART_TOOLTIP_STYLE,
   CHART_ANIMATION,
   DEPARTMENT_BAR_GRID,
   departmentColor,
@@ -46,9 +47,8 @@ export class AverageQualityScoreByDepartmentComponent {
 
     return {
       tooltip: {
+        ...CHART_TOOLTIP_STYLE,
         trigger: 'axis',
-        renderMode: 'html',
-        confine: true,
         axisPointer: { type: 'shadow' },
         formatter: (params) => {
           const item = Array.isArray(params) ? params[0] : params;

@@ -9,6 +9,7 @@ import type { EChartsOption } from 'echarts';
 import { DepartmentStatisticsDTO } from '../../../models/dashboard.model';
 import {
   CHART_COLORS,
+  CHART_TOOLTIP_STYLE,
   CHART_ANIMATION,
   DEPARTMENT_BAR_GRID,
   departmentColor,
@@ -35,9 +36,8 @@ export class WaitingTimeByDepartmentComponent {
 
     return {
       tooltip: {
+        ...CHART_TOOLTIP_STYLE,
         trigger: 'axis',
-        renderMode: 'html',
-        confine: true,
         axisPointer: {
           type: 'shadow',
         },

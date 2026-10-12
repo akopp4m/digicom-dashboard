@@ -9,6 +9,7 @@ import type { EChartsOption } from 'echarts';
 import type { DepartmentStatisticsDTO } from '../../../models/dashboard.model';
 import {
   CHART_COLORS,
+  CHART_TOOLTIP_STYLE,
   CHART_ANIMATION,
   departmentColor,
   departmentLabel,
@@ -48,9 +49,8 @@ export class ContactsByDepartmentComponent {
 
     return {
       tooltip: {
+        ...CHART_TOOLTIP_STYLE,
         trigger: 'item',
-        renderMode: 'html',
-        confine: true,
         formatter: (params) => {
           const item = Array.isArray(params) ? params[0] : params;
           const value = Number(item.value);
