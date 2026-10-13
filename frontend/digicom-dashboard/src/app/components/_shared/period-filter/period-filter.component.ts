@@ -1,4 +1,4 @@
-import { Component, output } from '@angular/core';
+import { Component, output, signal } from '@angular/core';
 import dayjs, { Dayjs } from 'dayjs/esm';
 
 export type PeriodOption = 'all' | 'today' | 'yesterday' | '7d' | '30d';
@@ -30,40 +30,39 @@ export class PeriodFilterComponent {
     { label: 'Letzte 30 Tage', value: '30d' },
   ];
 
-  selectedPeriod: PeriodOption = 'all';
+  readonly selectedOption = signal<PeriodOption>('all');
 
   calculatePeriodDates(option: PeriodOption): PeriodDates {
-    const now = dayjs();
+    const today = dayjs().startOf('day');
+    const tomorrow = today.add(1, 'day');
 
     switch (option) {
       case 'today':
         return {
           option,
-          from: now.startOf('day'),
-          to: now.startOf('day').add(1, 'day'),
+          from: today,
+          to: tomorrow,
         };
 
-      case 'yesterday': {
-        const today = now.startOf('day');
+      case 'yesterday':
         return {
           option,
           from: today.subtract(1, 'day'),
           to: today,
         };
-      }
 
       case '7d':
         return {
           option,
-          from: now.startOf('day').subtract(6, 'day'),
-          to: now.startOf('day').add(1, 'day'),
+          from: today.subtract(6, 'day'),
+          to: tomorrow,
         };
 
       case '30d':
         return {
           option,
-          from: now.startOf('day').subtract(29, 'day'),
-          to: now.startOf('day').add(1, 'day'),
+          from: today.subtract(29, 'day'),
+          to: tomorrow,
         };
 
       case 'all':
@@ -72,9 +71,9 @@ export class PeriodFilterComponent {
   }
 
   onPeriodChange(event: Event): void {
-    const period = (event.target as HTMLSelectElement).value as PeriodOption;
-    this.selectedPeriod = period;
-    const dates = this.calculatePeriodDates(period);
+    const option = (event.target as HTMLSelectElement).value as PeriodOption;
+    this.selectedOption.set(option);
+    const dates = this.calculatePeriodDates(option);
     this.periodChange.emit(dates);
   }
 }

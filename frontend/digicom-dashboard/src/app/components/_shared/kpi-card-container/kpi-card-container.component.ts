@@ -15,72 +15,72 @@ export class KpiCardContainerComponent {
   readonly data = input.required<DashboardDTO>();
 
   readonly contactCards = computed<KpiCardInput[]>(() => {
-    const data = this.data();
+    const dashboard = this.data();
 
     return [
       {
         label: 'Kontakte Gesamt',
-        value: formatNumber(data.totalEvents),
+        value: formatNumber(dashboard.totalEvents),
         ...KPI_CARD_STYLES.contact,
       },
       {
         label: 'Eingehend',
-        value: formatNumber(data.inboundEvents),
+        value: formatNumber(dashboard.inboundEvents),
         ...KPI_CARD_STYLES.contact,
       },
       {
         label: 'Ausgehend',
-        value: formatNumber(data.outboundEvents),
+        value: formatNumber(dashboard.outboundEvents),
         ...KPI_CARD_STYLES.contact,
       },
       {
         label: 'Beantwortet',
-        value: formatNumber(data.answeredEvents),
+        value: formatNumber(dashboard.answeredEvents),
         ...KPI_CARD_STYLES.success,
       },
       {
         label: 'Verpasst',
-        value: formatNumber(data.missedEvents),
+        value: formatNumber(dashboard.missedEvents),
         ...KPI_CARD_STYLES.warning,
       },
       {
         label: 'Abgebrochen',
-        value: formatNumber(data.abandonedEvents),
+        value: formatNumber(dashboard.abandonedEvents),
         ...KPI_CARD_STYLES.abandoned,
       },
       {
         label: 'Fehlgeschlagen',
-        value: formatNumber(data.failedEvents),
+        value: formatNumber(dashboard.failedEvents),
         ...KPI_CARD_STYLES.error,
       },
     ];
   });
 
   readonly performanceCards = computed<KpiCardInput[]>(() => {
-    const data = this.data();
+    const dashboard = this.data();
 
     return [
       {
         label: 'Erreichbarkeit',
-        value: formatNumber(data.reachabilityRate, 1),
+        value: formatNumber(dashboard.reachabilityRate, 1),
         unit: '%',
         ...KPI_CARD_STYLES.success,
       },
       {
         label: 'Durchschn. Wartezeit',
-        value: formatNumber(data.averageWaitingTimeSeconds),
-        unit: 'sec',
+        value: formatNumber(dashboard.averageWaitingTimeSeconds),
+        unit: 's',
         ...KPI_CARD_STYLES.warning,
       },
       {
         label: 'Durchschn. Dauer',
-        value: formatNumber(data.averageDurationSeconds),
-        unit: 'sec',
+        value: formatNumber(dashboard.averageDurationSeconds),
+        unit: 's',
         ...KPI_CARD_STYLES.duration,
       },
       {
         label: 'Durchschn. Qualität',
-        value: formatNumber(data.averageQualityScore, 1),
+        value: formatNumber(dashboard.averageQualityScore, 1),
         unit: '/ 5',
         ...KPI_CARD_STYLES.quality,
       },
