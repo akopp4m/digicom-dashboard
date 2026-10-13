@@ -44,7 +44,7 @@ interface HeatmapCell {
   bandIndex: number;
   rating: number;
   count: number;
-  total: number;
+  bandTotal: number;
   percentage: number;
 }
 
@@ -76,24 +76,52 @@ export class WaitingQualityHeatmapComponent {
     }
 
     return buckets.flatMap((bucket, bandIndex) => {
-      const total = Object.values(bucket.countsByRating).reduce((sum, count) => sum + count, 0);
+      const bandTotal = Object.values(bucket.countsByRating).reduce((sum, count) => sum + count, 0);
       return qualityRatings.map(({ score }) => {
         const count = bucket.countsByRating[score];
         return {
           bandIndex,
           rating: score,
           count,
-          total,
-          percentage: calculatePercentage(count, total),
+          bandTotal,
+          percentage: calculatePercentage(count, bandTotal),
         };
       });
     });
   });
 
+  readonly chartDescription = computed(() => {
+    const cells = this.chartData();
+    const title = 'Wartezeit und Gesprächsqualität bewerteter eingehender Kontakte.';
+    if (cells.every((cell) => cell.bandTotal === 0)) {
+      return `${title} Keine Bewertungen verfügbar.`;
+    }
+
+    const distribution = waitingTimeBands
+      .map((_, bandIndex) => {
+        const bandCells = cells.filter((cell) => cell.bandIndex === bandIndex);
+        const bandTotal = bandCells[0].bandTotal;
+        const waitingTime = this.formatWaitingTimeRange(bandIndex);
+        if (bandTotal === 0) {
+          return `${waitingTime}: keine Bewertungen`;
+        }
+
+        const ratings = bandCells
+          .map(
+            (cell) =>
+              `Bewertung ${cell.rating} von 5: ${formatNumber(cell.count)} Kontakte, ${formatNumber(cell.percentage, 1)} Prozent`,
+          )
+          .join('; ');
+        return `${waitingTime}, ${formatNumber(bandTotal)} bewertete Kontakte: ${ratings}`;
+      })
+      .join('. ');
+    return `${title} ${distribution}`;
+  });
+
   readonly chartOptions = computed<EChartsOption>(() => {
     const data = this.chartData();
     const colorScaleMax = Math.max(1, ...data.map((cell) => cell.percentage));
-    const ratingData = qualityRatings.map(({ score }) =>
+    const cellsByRating = qualityRatings.map(({ score }) =>
       data.filter((cell) => cell.rating === score),
     );
 
@@ -141,16 +169,17 @@ export class WaitingQualityHeatmapComponent {
         axisLabel: { color: CHART_COLORS.mutedText },
         splitArea: { show: true },
       },
+      // Each rating series has its own white-to-color gradient, using the same percentage scale.
       visualMap: qualityRatings.map(({ color }, index) => ({
         type: 'continuous',
         show: false,
         min: 0,
         max: colorScaleMax,
-        dimension: 2,
-        seriesIndex: index,
+        dimension: 2, // Shade by the percentage, the third value in each cell.
+        seriesIndex: index, // Apply this gradient to the corresponding rating series.
         inRange: { color: [CHART_COLORS.white, color] },
       })),
-      series: ratingData.map((cells, index) => ({
+      series: cellsByRating.map((cells, index) => ({
         name: qualityRatings[index].label,
         type: 'heatmap',
         data: cells.map((cell) =>
@@ -173,11 +202,12 @@ export class WaitingQualityHeatmapComponent {
     const backgroundColor = echarts.color.lerp(intensity, [CHART_COLORS.white, ratingColor])!;
 
     return {
+      // ECharts cell values: [waiting-time band index, rating index, percentage]. Both indexes start at 0.
       value: [cell.bandIndex, cell.rating - 1, cell.percentage],
       tooltip: { formatter: () => this.formatTooltip(cell, ratingColor) },
       label: {
         color: contrastingTextColor(backgroundColor),
-        formatter: () => (cell.total > 0 ? `${formatNumber(cell.percentage, 0)} %` : '–'),
+        formatter: () => (cell.bandTotal > 0 ? `${formatNumber(cell.percentage, 0)} %` : '–'),
       },
     };
   }
@@ -194,9 +224,9 @@ export class WaitingQualityHeatmapComponent {
     const waitingTime = this.formatWaitingTimeRange(cell.bandIndex);
     const marker = echarts.format.getTooltipMarker(ratingColor);
     const percentage =
-      cell.total > 0 ? `${formatNumber(cell.percentage, 1)} %` : 'Keine Bewertungen';
+      cell.bandTotal > 0 ? `${formatNumber(cell.percentage, 1)} %` : 'Keine Bewertungen';
     const count = formatNumber(cell.count, 0);
-    const total = formatNumber(cell.total, 0);
+    const bandTotal = formatNumber(cell.bandTotal, 0);
 
     return `
       <div class="mb-2 text-sm font-semibold">${waitingTime}</div>
@@ -204,7 +234,7 @@ export class WaitingQualityHeatmapComponent {
       <div class="text-2xl font-semibold leading-tight">${percentage}</div>
       <div class="mt-1 text-gray-600">Anteil in dieser Wartezeitgruppe</div>
       <div class="mt-2.5 border-t border-gray-200 pt-2">
-        <strong>${count}</strong> von <strong>${total}</strong> bewerteten Kontakten
+        <strong>${count}</strong> von <strong>${bandTotal}</strong> bewerteten Kontakten
       </div>
     `;
   }

@@ -8,7 +8,7 @@
     [options]="chartOptions()"
     class="min-h-0 w-full flex-1"
     role="img"
-    aria-label="Wartezeit und Gesprächsqualität bewerteter eingehender Kontakte. Jede Bewertung hat eine eigene Farbe. Dunklere Zellen zeigen höhere Anteile unter bewerteten Kontakten je Wartezeitgruppe. Ein Strich kennzeichnet Gruppen ohne bewertete Kontakte."
+    [attr.aria-label]="chartDescription()"
   ></div>
   <p class="mt-1 text-center text-xs text-gray-600">Dunkler = höherer Anteil</p>
 </div>
