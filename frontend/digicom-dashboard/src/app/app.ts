@@ -8,5 +8,5 @@ import { RouterOutlet } from '@angular/router';
   templateUrl: './app.html',
 })
 export class App {
-  protected readonly title = signal('digicom-dashboard');
+  protected readonly title = signal('Digicom Contact Center Intelligence');
 }
