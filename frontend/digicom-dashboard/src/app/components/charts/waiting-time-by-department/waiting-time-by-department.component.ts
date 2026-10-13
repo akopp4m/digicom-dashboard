@@ -9,12 +9,13 @@ import type { EChartsOption } from 'echarts';
 import { DepartmentStatisticsDTO } from '../../../models/dashboard.model';
 import {
   DEPARTMENT_BAR_GRID,
+  DEPARTMENT_VALUE_AXIS,
   departmentAxis,
   departmentBarStyle,
   departmentBarTooltip,
   departmentColor,
   departmentLabel,
-} from '../chart.utils';
+} from '../department-chart.utils';
 
 const formatWaitingTime = (value: number) => `${formatNumber(value, 2)} s`;
 
@@ -57,9 +58,8 @@ export class WaitingTimeByDepartmentComponent {
       tooltip: departmentBarTooltip('Durchschnittliche Wartezeit', formatWaitingTime),
       grid: DEPARTMENT_BAR_GRID,
       xAxis: {
-        type: 'value',
-        show: false,
-        splitLine: { show: false },
+        ...DEPARTMENT_VALUE_AXIS,
+        min: 0,
       },
 
       yAxis: departmentAxis(departments.map((item) => item.department)),

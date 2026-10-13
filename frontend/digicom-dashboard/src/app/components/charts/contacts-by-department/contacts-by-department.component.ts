@@ -7,14 +7,12 @@ import { TooltipComponent } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
 import type { EChartsOption } from 'echarts';
 import type { DepartmentStatisticsDTO } from '../../../models/dashboard.model';
+import { CHART_COLORS, CHART_TOOLTIP_STYLE, CHART_ANIMATION } from '../chart.utils';
 import {
-  CHART_COLORS,
-  CHART_TOOLTIP_STYLE,
-  CHART_ANIMATION,
   departmentColor,
   departmentLabel,
   formatDepartmentTooltip,
-} from '../chart.utils';
+} from '../department-chart.utils';
 
 echarts.use([PieChart, TooltipComponent, CanvasRenderer]);
 

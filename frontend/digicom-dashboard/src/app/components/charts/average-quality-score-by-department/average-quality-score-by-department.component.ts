@@ -9,12 +9,13 @@ import type { EChartsOption } from 'echarts';
 import type { DepartmentStatisticsDTO } from '../../../models/dashboard.model';
 import {
   DEPARTMENT_BAR_GRID,
+  DEPARTMENT_VALUE_AXIS,
   departmentAxis,
   departmentBarStyle,
   departmentBarTooltip,
   departmentColor,
   departmentLabel,
-} from '../chart.utils';
+} from '../department-chart.utils';
 
 const formatQualityScore = (value: number) => formatNumber(value, 1);
 
@@ -58,11 +59,9 @@ export class AverageQualityScoreByDepartmentComponent {
       tooltip: departmentBarTooltip('Durchschnittlicher Qualitätsscore', formatQualityScore),
       grid: DEPARTMENT_BAR_GRID,
       xAxis: {
-        type: 'value',
+        ...DEPARTMENT_VALUE_AXIS,
         min: 0,
         max: 5,
-        show: false,
-        splitLine: { show: false },
       },
 
       yAxis: departmentAxis(departments.map((item) => item.department)),
