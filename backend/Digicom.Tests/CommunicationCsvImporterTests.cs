@@ -31,6 +31,7 @@ public sealed class CommunicationCsvImporterTests
         foreach (var item in events)
         {
             await Assert.That(item.Id).IsGreaterThan(0);
+            await Assert.That(item.Timestamp.Kind).IsEqualTo(DateTimeKind.Utc);
         }
     }
 

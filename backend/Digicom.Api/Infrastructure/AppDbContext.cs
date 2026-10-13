@@ -13,6 +13,12 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
         {
             entity.HasKey(e => e.Id);
 
+            // SQLite does not preserve DateTime.Kind; stored clock values are UTC.
+            entity.Property(e => e.Timestamp).HasConversion(
+                timestamp => timestamp,
+                timestamp => DateTime.SpecifyKind(timestamp, DateTimeKind.Utc)
+            );
+
             entity.Property(e => e.Direction).HasConversion<string>().HasMaxLength(20);
 
             entity.Property(e => e.Channel).HasConversion<string>().HasMaxLength(20);
