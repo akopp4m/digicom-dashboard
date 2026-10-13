@@ -1,8 +1,7 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { DashboardService } from '../../services/dashboard.service';
 import { DashboardDTO } from '../../models/dashboard.model';
 import { WaitingTimeByDepartmentComponent } from '../charts/waiting-time-by-department/waiting-time-by-department.component';
-import { CommonModule } from '@angular/common';
 import { ContactsOverTimeComponent } from '../charts/contacts-over-time/contacts-over-time.component';
 import { WaitingQualityHeatmapComponent } from '../charts/waiting-quality-heatmap/waiting-quality-heatmap.component';
 import { AverageQualityScoreByDepartmentComponent } from '../charts/average-quality-score-by-department/average-quality-score-by-department.component';
@@ -23,13 +22,12 @@ import { Subscription } from 'rxjs';
     WaitingQualityHeatmapComponent,
     AverageQualityScoreByDepartmentComponent,
     ContactsByDepartmentComponent,
-    CommonModule,
   ],
   selector: 'app-dashboard',
   styleUrl: './dashboard.component.css',
   templateUrl: './dashboard.component.html',
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
   private readonly dashboardService = inject(DashboardService);
 
   public readonly dashboard = signal<DashboardDTO | undefined>(undefined);
@@ -40,6 +38,10 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadDashboard();
+  }
+
+  ngOnDestroy(): void {
+    this.dashboardSubscription?.unsubscribe();
   }
 
   onPeriodChange(event: PeriodDates) {
@@ -55,7 +57,6 @@ export class DashboardComponent implements OnInit {
       .getDashboard(from?.toISOString(), to?.toISOString())
       .subscribe({
         next: (dashboard) => {
-          console.log(dashboard);
           this.selectedPeriod.set(period);
           this.dashboard.set(dashboard);
           this.loading.set(false);
