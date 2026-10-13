@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Digicom.Api.Features.Dashboard;
 using Digicom.Api.Infrastructure;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,10 @@ public class Program
     public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+
+        builder.Services.ConfigureHttpJsonOptions(options =>
+            options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+        );
 
         builder.Services.AddDbContext<AppDbContext>(options =>
             options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"))
