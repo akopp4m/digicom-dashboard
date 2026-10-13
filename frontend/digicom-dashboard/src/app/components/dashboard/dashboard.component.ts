@@ -6,7 +6,7 @@ import { ContactsOverTimeComponent } from '../charts/contacts-over-time/contacts
 import { WaitingQualityHeatmapComponent } from '../charts/waiting-quality-heatmap/waiting-quality-heatmap.component';
 import { AverageQualityScoreByDepartmentComponent } from '../charts/average-quality-score-by-department/average-quality-score-by-department.component';
 import { ContactsByDepartmentComponent } from '../charts/contacts-by-department/contacts-by-department.component';
-import { KpiCardContainerComponent } from '../_shared/kpi-card-container/kpi-card-container.component';
+import { KpiCardContainerComponent } from './kpi-card-container/kpi-card-container.component';
 import {
   PeriodDates,
   PeriodFilterComponent,

@@ -1,8 +1,8 @@
 import { Component, computed, input } from '@angular/core';
-import { KpiCardComponent } from '../kpi-card/kpi-card.component';
+import { KpiCardComponent } from '../../_shared/kpi-card/kpi-card.component';
 import { DashboardDTO } from '../../../models/dashboard.model';
-import { KpiCardInput } from '../kpi-card/kpi-card.model';
-import { KPI_CARD_STYLES } from '../kpi-card/kpi-card.utils';
+import { KpiCardInput } from '../../_shared/kpi-card/kpi-card.model';
+import { KPI_CARD_STYLES } from '../../_shared/kpi-card/kpi-card.utils';
 import { formatNumber } from '../../../utils/number.utils';
 
 @Component({
