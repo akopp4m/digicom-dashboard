@@ -26,23 +26,26 @@ echarts.use([PieChart, TooltipComponent, CanvasRenderer]);
 export class ContactsByDepartmentComponent {
   readonly data = input<DepartmentStatisticsDTO[]>([]);
 
-  readonly chartDescription = computed(
-    () =>
-      'Kontaktverteilung nach Abteilung. ' +
-      (this.data().length
-        ? this.data()
-            .map(
-              (item) =>
-                `${departmentLabel(item.department)}: ${formatNumber(item.contactAmount, 0)} Kontakte`,
-            )
-            .join('; ')
-        : 'Keine Daten verfügbar.'),
-  );
+  readonly chartDescription = computed(() => {
+    const departments = this.data();
+    const title = 'Kontaktverteilung nach Abteilung.';
+
+    if (departments.length === 0) {
+      return `${title} Keine Daten verfügbar.`;
+    }
+
+    const contacts = departments
+      .map(
+        (item) =>
+          `${departmentLabel(item.department)}: ${formatNumber(item.contactAmount)} Kontakte`,
+      )
+      .join('; ');
+    return `${title} ${contacts}`;
+  });
 
   readonly chartOptions = computed<EChartsOption>(() => {
-    const data = [...this.data()].sort((a, b) => b.contactAmount - a.contactAmount);
+    const data = this.data();
     const total = data.reduce((sum, item) => sum + item.contactAmount, 0);
-    const percentage = (value: number) => formatNumber(calculatePercentage(value, total), 1);
 
     return {
       tooltip: {
@@ -55,7 +58,7 @@ export class ContactsByDepartmentComponent {
             item.name,
             item.marker,
             'Kontakte',
-            `${formatNumber(value, 0)} (${percentage(value)} %)`,
+            `${formatNumber(value)} (${formatNumber(calculatePercentage(value, total), 1)} %)`,
           );
         },
       },
@@ -77,7 +80,8 @@ export class ContactsByDepartmentComponent {
             position: 'outside',
             bleedMargin: 5,
             overflow: 'break',
-            formatter: (params) => `${params.name}\n${percentage(Number(params.value))} %`,
+            formatter: (params) =>
+              `${params.name}\n${formatNumber(calculatePercentage(Number(params.value), total), 1)} %`,
             color: CHART_COLORS.label,
             fontSize: 12,
           },
