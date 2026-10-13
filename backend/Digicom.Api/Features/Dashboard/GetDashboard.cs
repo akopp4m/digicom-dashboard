@@ -37,9 +37,6 @@ public static class GetDashboard
             return TypedResults.BadRequest("'from' must be earlier than 'to'.");
         }
 
-        Console.WriteLine("FROM: " + from);
-        Console.WriteLine("TO: " + to);
-
         IQueryable<CommunicationEvent> query = db.CommunicationEvents.AsNoTracking();
 
         if (from.HasValue)
@@ -52,7 +49,9 @@ public static class GetDashboard
             query = query.Where(e => e.Timestamp < to.Value);
         }
 
-        CommunicationEvent[] events = await query.ToArrayAsync(cancellationToken);
+        CommunicationEvent[] events = await query
+            .OrderBy(e => e.Timestamp)
+            .ToArrayAsync(cancellationToken);
 
         DashboardDto response = calculationService.Calculate(events);
 
