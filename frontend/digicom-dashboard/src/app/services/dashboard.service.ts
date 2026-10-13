@@ -10,7 +10,6 @@ export class DashboardService {
   getDashboard(from?: string, to?: string): Observable<DashboardDTO> {
     let params = new HttpParams();
 
-    console.log({ from, to });
     if (from != null && to != null) {
       params = params.set('from', from).set('to', to);
     }
