@@ -4,7 +4,7 @@ import dayjs, { Dayjs } from 'dayjs/esm';
 export type PeriodOption = 'all' | 'today' | 'yesterday' | '7d' | '30d';
 export type PeriodDates =
   | {
-      option: PeriodOption;
+      option: Exclude<PeriodOption, 'all'>;
       from: Dayjs;
       to: Dayjs;
     }
