@@ -1,0 +1,10 @@
+**/bin/
+**/obj/
+**/TestResults/
+**/data/*.db
+**/data/*.db-*
+**/data/*.db-journal
+**/*.user
+**/*.suo
+**/.DS_Store
+Digicom.Tests/

@@ -1,0 +1,66 @@
+# Digicom Dashboard
+
+## Run with Docker
+
+With Docker and Docker Compose available and the Docker daemon running, run
+from the repository root:
+
+```bash
+docker compose up --build
+```
+
+Open http://localhost:8080. The Angular production build is served by Nginx,
+which proxies `/api/` to the backend over Docker's internal network. The API
+is available at http://localhost:8080/api/dashboard; the backend has no host
+port mapping. Nginx falls back to `index.html` for client-side routes.
+
+If your installation provides the standalone `docker-compose` command
+(for example, with Colima), use `docker-compose` in place of `docker compose`
+in these commands.
+
+Stop and remove the containers:
+
+```bash
+docker compose down
+```
+
+## SQLite and CSV initialization
+
+SQLite lives at `/app/data/digicom.db` in the backend container's writable
+filesystem. No Docker volumes or source-code bind mounts are configured.
+On startup, the backend applies its existing migrations and imports
+`backend/Digicom.Api/data/digicom_communications_v6.csv` only when the
+database contains no communication events. This dataset is included in
+the published backend image, including nullable outbound quality scores.
+
+To obtain a fresh database, remove the containers and recreate them:
+
+```bash
+docker compose down
+docker compose up --build
+```
+
+`docker compose restart` restarts the existing containers; it does not
+recreate them or reset SQLite. Rebuilding an image alone does not reset
+the database in an existing container. Removing the backend container
+discards its database.
+
+## Local development
+
+Run the backend using the existing HTTP launch profile (.NET 10 SDK required):
+
+```bash
+dotnet run --project backend/Digicom.Api --launch-profile http
+```
+
+In a separate terminal, run the frontend (a supported Node.js version and
+pnpm 12.9.1 are required; the Docker build uses Node.js 24):
+
+```bash
+cd frontend/digicom-dashboard
+pnpm install --frozen-lockfile
+pnpm start
+```
+
+Open http://localhost:4200. The existing Angular development proxy forwards
+relative `/api` requests to the backend at http://localhost:5125.
