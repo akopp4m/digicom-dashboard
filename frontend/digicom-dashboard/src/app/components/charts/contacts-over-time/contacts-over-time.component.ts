@@ -49,14 +49,17 @@ export class ContactsOverTimeComponent {
       return [];
     }
 
-    const first = rangeStart.startOf(unit);
-    const last = (period.to ? rangeEnd.subtract(1, 'millisecond') : rangeEnd).startOf(unit);
+    const firstBucketStart = rangeStart.startOf(unit);
+    // The filter end is exclusive; subtract 1 ms to avoid a bucket for the next period.
+    const lastBucketStart = (period.to ? rangeEnd.subtract(1, 'millisecond') : rangeEnd).startOf(
+      unit,
+    );
     const buckets = new Map<number, ContactBucket>();
 
     // Fill the range with empty hourly or daily buckets before counting contacts.
     for (
-      let bucketStart = first;
-      !bucketStart.isAfter(last);
+      let bucketStart = firstBucketStart;
+      !bucketStart.isAfter(lastBucketStart);
       bucketStart = bucketStart.add(1, unit)
     ) {
       buckets.set(bucketStart.valueOf(), {
@@ -77,6 +80,23 @@ export class ContactsOverTimeComponent {
     }
 
     return [...buckets.values()];
+  });
+
+  readonly chartDescription = computed(() => {
+    const buckets = this.chartData();
+    const hourly = this.aggregation() === 'hour';
+    const title = `Kontaktaufkommen im Zeitverlauf pro ${hourly ? 'Stunde' : 'Tag'}.`;
+    if (buckets.length === 0) {
+      return `${title} Keine Daten verfügbar.`;
+    }
+
+    const contacts = buckets
+      .map((bucket) => {
+        const timestamp = dayjs(bucket.timestamp).format(hourly ? 'DD.MM. HH:mm' : 'DD.MM.');
+        return `${timestamp}: ${formatNumber(bucket.inbound)} eingehend, ${formatNumber(bucket.outbound)} ausgehend`;
+      })
+      .join('; ');
+    return `${title} ${contacts}`;
   });
 
   readonly chartOptions = computed<EChartsOption>(() => {
@@ -115,13 +135,10 @@ export class ContactsOverTimeComponent {
 
       grid: {
         left: 5,
+        right: 20,
         top: 35,
-        outerBounds: {
-          left: 5,
-          right: 20,
-          top: 35,
-          bottom: 45,
-        },
+        bottom: 45,
+        outerBoundsMode: 'same',
       },
 
       xAxis: {
