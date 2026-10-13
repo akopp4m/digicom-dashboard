@@ -1,3 +1,5 @@
+using System.Globalization;
+using CsvHelper;
 using Digicom.Api.Infrastructure;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -15,15 +17,17 @@ public sealed class CommunicationCsvImporterTests
         await using var db = CreateDb(connection);
         await db.Database.MigrateAsync();
         var importer = new CommunicationCsvImporter(db, NullLogger<CommunicationCsvImporter>.Instance);
-        var today = DateTime.Today;
+        var today = DateTime.UtcNow.Date;
+        var sourceTimestamps = ReadDatasetTimestamps();
+        await Assert.That(sourceTimestamps.Count).IsGreaterThan(0);
 
         await importer.ImportIfEmptyAsync(DatasetPath);
 
         var events = await db.CommunicationEvents.AsNoTracking().ToListAsync();
-        await Assert.That(events.Count).IsEqualTo(600);
+        await Assert.That(events.Count).IsEqualTo(sourceTimestamps.Count);
         await Assert.That(events.Max(x => x.Timestamp).Date).IsEqualTo(today);
         await Assert.That(events.Max(x => x.Timestamp).Date - events.Min(x => x.Timestamp).Date)
-            .IsEqualTo(TimeSpan.FromDays(25));
+            .IsEqualTo(sourceTimestamps.Max().Date - sourceTimestamps.Min().Date);
         foreach (var item in events)
         {
             await Assert.That(item.Id).IsGreaterThan(0);
@@ -39,11 +43,13 @@ public sealed class CommunicationCsvImporterTests
         await db.Database.MigrateAsync();
         var importer = new CommunicationCsvImporter(db, NullLogger<CommunicationCsvImporter>.Instance);
         await importer.ImportIfEmptyAsync(DatasetPath);
+        var countBefore = await db.CommunicationEvents.CountAsync();
+        await Assert.That(countBefore).IsGreaterThan(0);
 
         // A missing file proves that a repeated import skips reading the CSV entirely.
         await importer.ImportIfEmptyAsync(Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".csv"));
 
-        await Assert.That(await db.CommunicationEvents.CountAsync()).IsEqualTo(600);
+        await Assert.That(await db.CommunicationEvents.CountAsync()).IsEqualTo(countBefore);
     }
 
     [Test]
@@ -72,7 +78,23 @@ public sealed class CommunicationCsvImporterTests
     }
 
     private static string DatasetPath =>
-        Path.Combine(AppContext.BaseDirectory, "data", "digicom_communications_600.csv");
+        Path.Combine(AppContext.BaseDirectory, "data", "digicom_communications_v6.csv");
+
+    private static List<DateTime> ReadDatasetTimestamps()
+    {
+        using var reader = new StreamReader(DatasetPath);
+        using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
+        csv.Read();
+        csv.ReadHeader();
+
+        var timestamps = new List<DateTime>();
+        while (csv.Read())
+        {
+            timestamps.Add(csv.GetField<DateTime>("Timestamp"));
+        }
+
+        return timestamps;
+    }
 
     private static AppDbContext CreateDb(SqliteConnection connection) =>
         new(new DbContextOptionsBuilder<AppDbContext>().UseSqlite(connection).Options);
