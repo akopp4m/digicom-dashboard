@@ -67,10 +67,10 @@ public sealed record DashboardDto(
     int MissedEvents,
     int AbandonedEvents,
     int FailedEvents,
-    double AverageDurationSeconds,
-    double AverageWaitingTimeSeconds,
-    double AverageQualityScore,
-    double ReachabilityRate,
+    double? AverageDurationSeconds,
+    double? AverageWaitingTimeSeconds,
+    double? AverageQualityScore,
+    double? ReachabilityRate,
     CommunicationEventDto[] CommunicationEvents,
     DepartmentStatisticsDto[] DepartmentStatistics
 );
@@ -84,7 +84,7 @@ public sealed record CommunicationEventDto(
 
 public sealed record DepartmentStatisticsDto(
     string Department,
-    double AverageWaitingTimeSeconds,
-    double AverageQualityScore,
+    double? AverageWaitingTimeSeconds,
+    double? AverageQualityScore,
     int ContactAmount
 );

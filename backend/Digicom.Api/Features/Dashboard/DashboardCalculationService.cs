@@ -18,10 +18,10 @@ public sealed class DashboardCalculationService
                 MissedEvents: 0,
                 AbandonedEvents: 0,
                 FailedEvents: 0,
-                AverageDurationSeconds: 0,
-                AverageWaitingTimeSeconds: 0,
-                AverageQualityScore: 0,
-                ReachabilityRate: 0,
+                AverageDurationSeconds: null,
+                AverageWaitingTimeSeconds: null,
+                AverageQualityScore: null,
+                ReachabilityRate: null,
                 CommunicationEvents: [],
                 DepartmentStatistics: []
             );
@@ -34,10 +34,10 @@ public sealed class DashboardCalculationService
         int abandoned = CountByStatus(events, CommunicationStatus.Abandoned);
         int failed = CountByStatus(events, CommunicationStatus.Failed);
 
-        double averageDuration = CalculateAverageDuration(events);
-        double averageWaitingTime = CalculateAverageWaitingTime(events);
-        double averageQualityScore = CalculateAverageQualityScore(events);
-        double reachabilityRate = CalculateReachabilityRate(events, inbound);
+        double? averageDuration = CalculateAverageDuration(events);
+        double? averageWaitingTime = CalculateAverageWaitingTime(events);
+        double? averageQualityScore = CalculateAverageQualityScore(events);
+        double? reachabilityRate = CalculateReachabilityRate(events, inbound);
 
         CommunicationEventDto[] communicationEvents = MapCommunicationEvents(events);
         DepartmentStatisticsDto[] departmentStatistics = CalculateDepartmentStatistics(events);
@@ -89,46 +89,46 @@ public sealed class DashboardCalculationService
             .ToArray();
     }
 
-    internal static double CalculateAverageDuration(IEnumerable<CommunicationEvent> events)
+    internal static double? CalculateAverageDuration(IEnumerable<CommunicationEvent> events)
     {
         return events
             .Where(e => e.Status == CommunicationStatus.Answered)
-            .Select(e => e.DurationSeconds)
-            .DefaultIfEmpty(0)
-            .Average();
+            .Average(e => (double?)e.DurationSeconds);
     }
 
-    internal static double CalculateAverageWaitingTime(IEnumerable<CommunicationEvent> events)
+    internal static double? CalculateAverageWaitingTime(IEnumerable<CommunicationEvent> events)
     {
         return events
             .Where(e => e.Direction == CommunicationDirection.Inbound)
-            .Select(e => e.WaitingTimeSeconds)
-            .DefaultIfEmpty(0)
-            .Average();
+            .Average(e => (double?)e.WaitingTimeSeconds);
     }
 
-    internal static double CalculateAverageQualityScore(IEnumerable<CommunicationEvent> events)
+    internal static double? CalculateAverageQualityScore(IEnumerable<CommunicationEvent> events)
     {
         return events
-                .Where(e =>
-                    e.Direction == CommunicationDirection.Inbound
-                    && e.Status == CommunicationStatus.Answered
-                )
-                .Average(e => e.QualityScore)
-            ?? 0;
+            .Where(e =>
+                e.Direction == CommunicationDirection.Inbound
+                && e.Status == CommunicationStatus.Answered
+            )
+            .Average(e => e.QualityScore);
     }
 
-    internal static double CalculateReachabilityRate(
+    internal static double? CalculateReachabilityRate(
         IEnumerable<CommunicationEvent> events,
         int inbound
     )
     {
+        if (inbound == 0)
+        {
+            return null;
+        }
+
         int answeredInbound = events.Count(e =>
             e.Direction == CommunicationDirection.Inbound
             && e.Status == CommunicationStatus.Answered
         );
 
-        return inbound == 0 ? 0 : (double)answeredInbound / inbound * 100;
+        return (double)answeredInbound / inbound * 100;
     }
 
     internal static DepartmentStatisticsDto[] CalculateDepartmentStatistics(

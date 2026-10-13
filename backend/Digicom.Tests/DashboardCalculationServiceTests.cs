@@ -23,7 +23,7 @@ public sealed class DashboardCalculationServiceTests
             CreateEvent(CommunicationDirection.Outbound, CommunicationStatus.Answered),
         ];
 
-        double reachability = DashboardCalculationService.CalculateReachabilityRate(events, inbound: 10);
+        double? reachability = DashboardCalculationService.CalculateReachabilityRate(events, inbound: 10);
 
         await Assert.That(reachability).IsEqualTo(80d);
     }
@@ -40,7 +40,7 @@ public sealed class DashboardCalculationServiceTests
             CreateEvent(CommunicationDirection.Outbound, CommunicationStatus.Answered),
         ];
 
-        double average = DashboardCalculationService.CalculateAverageWaitingTime(events);
+        double? average = DashboardCalculationService.CalculateAverageWaitingTime(events);
 
         await Assert.That(average).IsEqualTo(15.5);
     }
@@ -64,7 +64,7 @@ public sealed class DashboardCalculationServiceTests
         await Assert.That(departments[0]).IsEqualTo(new DepartmentStatisticsDto(
             Department: "Support",
             AverageWaitingTimeSeconds: 20,
-            AverageQualityScore: 0,
+            AverageQualityScore: null,
             ContactAmount: 2
         ));
         await Assert.That(departments[1]).IsEqualTo(new DepartmentStatisticsDto(
@@ -86,7 +86,7 @@ public sealed class DashboardCalculationServiceTests
             CreateEvent(CommunicationDirection.Inbound, CommunicationStatus.Missed, quality: 1),
         ];
 
-        double average = DashboardCalculationService.CalculateAverageQualityScore(events);
+        double? average = DashboardCalculationService.CalculateAverageQualityScore(events);
 
         await Assert.That(average).IsEqualTo(4d);
     }
