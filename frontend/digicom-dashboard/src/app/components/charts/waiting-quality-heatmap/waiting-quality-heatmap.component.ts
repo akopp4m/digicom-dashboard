@@ -90,34 +90,6 @@ export class WaitingQualityHeatmapComponent {
     });
   });
 
-  readonly chartDescription = computed(() => {
-    const cells = this.chartData();
-    const title = 'Wartezeit und Gesprächsqualität bewerteter eingehender Kontakte.';
-    if (cells.every((cell) => cell.bandTotal === 0)) {
-      return `${title} Keine Bewertungen verfügbar.`;
-    }
-
-    const distribution = waitingTimeBands
-      .map((_, bandIndex) => {
-        const bandCells = cells.filter((cell) => cell.bandIndex === bandIndex);
-        const bandTotal = bandCells[0].bandTotal;
-        const waitingTime = this.formatWaitingTimeRange(bandIndex);
-        if (bandTotal === 0) {
-          return `${waitingTime}: keine Bewertungen`;
-        }
-
-        const ratings = bandCells
-          .map(
-            (cell) =>
-              `Bewertung ${cell.rating} von 5: ${formatNumber(cell.count)} Kontakte, ${formatNumber(cell.percentage, 1)} Prozent`,
-          )
-          .join('; ');
-        return `${waitingTime}, ${formatNumber(bandTotal)} bewertete Kontakte: ${ratings}`;
-      })
-      .join('. ');
-    return `${title} ${distribution}`;
-  });
-
   readonly chartOptions = computed<EChartsOption>(() => {
     const data = this.chartData();
     const colorScaleMax = Math.max(1, ...data.map((cell) => cell.percentage));

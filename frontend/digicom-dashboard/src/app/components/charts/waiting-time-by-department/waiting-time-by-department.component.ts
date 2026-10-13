@@ -14,7 +14,6 @@ import {
   departmentBarStyle,
   departmentBarTooltip,
   departmentColor,
-  departmentLabel,
 } from '../department-chart.utils';
 
 const formatWaitingTime = (value: number) => `${formatNumber(value, 2)} s`;
@@ -34,22 +33,6 @@ export class WaitingTimeByDepartmentComponent {
   readonly chartData = computed(() =>
     [...this.data()].sort((a, b) => b.averageWaitingTimeSeconds - a.averageWaitingTimeSeconds),
   );
-
-  readonly chartDescription = computed(() => {
-    const departments = this.chartData();
-    const title = 'Durchschnittliche Wartezeit nach Abteilung.';
-    if (departments.length === 0) {
-      return `${title} Keine Daten verfügbar.`;
-    }
-
-    const waitingTimes = departments
-      .map(
-        (item) =>
-          `${departmentLabel(item.department)}: ${formatWaitingTime(item.averageWaitingTimeSeconds)}`,
-      )
-      .join('; ');
-    return `${title} ${waitingTimes}`;
-  });
 
   readonly chartOptions = computed<EChartsOption>(() => {
     const departments = this.chartData();

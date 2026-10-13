@@ -26,23 +26,6 @@ echarts.use([PieChart, TooltipComponent, CanvasRenderer]);
 export class ContactsByDepartmentComponent {
   readonly data = input<DepartmentStatisticsDTO[]>([]);
 
-  readonly chartDescription = computed(() => {
-    const departments = this.data();
-    const title = 'Kontaktverteilung nach Abteilung.';
-
-    if (departments.length === 0) {
-      return `${title} Keine Daten verfügbar.`;
-    }
-
-    const contacts = departments
-      .map(
-        (item) =>
-          `${departmentLabel(item.department)}: ${formatNumber(item.contactAmount)} Kontakte`,
-      )
-      .join('; ');
-    return `${title} ${contacts}`;
-  });
-
   readonly chartOptions = computed<EChartsOption>(() => {
     const data = this.data();
     const total = data.reduce((sum, item) => sum + item.contactAmount, 0);

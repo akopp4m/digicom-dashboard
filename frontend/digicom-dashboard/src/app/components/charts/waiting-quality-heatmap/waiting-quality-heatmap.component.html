@@ -3,12 +3,6 @@
     Wartezeit und Gesprächsqualität
   </h2>
   <p class="mt-1 text-xs text-gray-600">Anteil je Bewertung unter bewerteten Kontakten</p>
-  <div
-    echarts
-    [options]="chartOptions()"
-    class="min-h-0 w-full flex-1"
-    role="img"
-    [attr.aria-label]="chartDescription()"
-  ></div>
+  <div echarts [options]="chartOptions()" class="min-h-0 w-full flex-1"></div>
   <p class="mt-1 text-center text-xs text-gray-600">Dunkler = höherer Anteil</p>
 </div>

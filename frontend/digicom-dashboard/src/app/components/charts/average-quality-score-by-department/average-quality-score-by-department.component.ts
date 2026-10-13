@@ -14,7 +14,6 @@ import {
   departmentBarStyle,
   departmentBarTooltip,
   departmentColor,
-  departmentLabel,
 } from '../department-chart.utils';
 
 const formatQualityScore = (value: number) => formatNumber(value, 1);
@@ -34,23 +33,6 @@ export class AverageQualityScoreByDepartmentComponent {
   readonly chartData = computed(() =>
     [...this.data()].sort((a, b) => b.averageQualityScore - a.averageQualityScore),
   );
-
-  readonly chartDescription = computed(() => {
-    const departments = this.chartData();
-    const title = 'Durchschnittlicher Qualitätsscore nach Abteilung.';
-
-    if (departments.length === 0) {
-      return `${title} Keine Daten verfügbar.`;
-    }
-
-    const scores = departments
-      .map(
-        (item) =>
-          `${departmentLabel(item.department)}: ${formatQualityScore(item.averageQualityScore)}`,
-      )
-      .join('; ');
-    return `${title} ${scores}`;
-  });
 
   readonly chartOptions = computed<EChartsOption>(() => {
     const departments = this.chartData();

@@ -82,23 +82,6 @@ export class ContactsOverTimeComponent {
     return [...buckets.values()];
   });
 
-  readonly chartDescription = computed(() => {
-    const buckets = this.chartData();
-    const hourly = this.aggregation() === 'hour';
-    const title = `Kontaktaufkommen im Zeitverlauf pro ${hourly ? 'Stunde' : 'Tag'}.`;
-    if (buckets.length === 0) {
-      return `${title} Keine Daten verfügbar.`;
-    }
-
-    const contacts = buckets
-      .map((bucket) => {
-        const timestamp = dayjs(bucket.timestamp).format(hourly ? 'DD.MM. HH:mm' : 'DD.MM.');
-        return `${timestamp}: ${formatNumber(bucket.inbound)} eingehend, ${formatNumber(bucket.outbound)} ausgehend`;
-      })
-      .join('; ');
-    return `${title} ${contacts}`;
-  });
-
   readonly chartOptions = computed<EChartsOption>(() => {
     const data = this.chartData();
     const hourly = this.aggregation() === 'hour';

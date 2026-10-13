@@ -5,11 +5,5 @@
   <p class="mt-1 text-xs text-gray-600">
     Eingehende und ausgehende Kontakte pro {{ aggregation() === 'hour' ? 'Stunde' : 'Tag' }}
   </p>
-  <div
-    echarts
-    [options]="chartOptions()"
-    role="img"
-    [attr.aria-label]="chartDescription()"
-    class="min-h-0 w-full flex-1"
-  ></div>
+  <div echarts [options]="chartOptions()" class="min-h-0 w-full flex-1"></div>
 </div>
