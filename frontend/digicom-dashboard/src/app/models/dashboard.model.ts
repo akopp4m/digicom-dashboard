@@ -22,7 +22,8 @@ interface CommunicationEventBaseDTO {
 
 export type CommunicationEventDTO = CommunicationEventBaseDTO &
   (
-    { direction: 'Inbound'; qualityScore: number } | { direction: 'Outbound'; qualityScore?: never }
+    | { direction: 'Inbound'; qualityScore?: number }
+    | { direction: 'Outbound'; qualityScore?: never }
   );
 
 export interface DepartmentStatisticsDTO {
