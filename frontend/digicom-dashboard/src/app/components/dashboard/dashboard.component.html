@@ -10,7 +10,7 @@
     @if (!loading()) {
       <div
         class="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm font-medium"
-        [ngClass]="
+        [class]="
           dashboard() != null
             ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
             : 'border-red-200 bg-red-50 text-red-700'
@@ -18,21 +18,18 @@
       >
         <span
           class="h-2 w-2 rounded-full"
-          [ngClass]="dashboard() != null ? 'bg-emerald-500' : 'bg-red-500'"
+          [class]="dashboard() != null ? 'bg-emerald-500' : 'bg-red-500'"
         ></span>
         {{ dashboard() != null ? 'Dashboard aktiv' : 'keine Verbindung' }}
       </div>
     }
   </header>
 
-  @if (dashboard() != null) {
+  @if (dashboard(); as dashboardData) {
     <div class="col-span-full flex flex-row justify-end">
       <app-period-filter (periodChange)="onPeriodChange($event)"></app-period-filter>
     </div>
-    <app-kpi-card-container class="col-span-full" [data]="dashboard()!"></app-kpi-card-container>
-  }
-
-  @if (dashboard()?.departmentStatistics != null) {
+    <app-kpi-card-container class="col-span-full" [data]="dashboardData"></app-kpi-card-container>
     <section class="col-span-full" aria-labelledby="department-overview-title">
       <h2
         id="department-overview-title"
@@ -45,7 +42,7 @@
           <h3 class="mb-1 text-sm font-semibold text-gray-600">Durchschnittliche Wartezeit</h3>
           <app-waiting-time-by-department
             class="block h-55"
-            [data]="dashboard()!.departmentStatistics"
+            [data]="dashboardData.departmentStatistics"
           ></app-waiting-time-by-department>
         </div>
         <div class="min-w-0 flex-1 basis-full lg:basis-96">
@@ -54,28 +51,26 @@
           </h3>
           <app-average-quality-score-by-department
             class="block h-55"
-            [data]="dashboard()!.departmentStatistics"
+            [data]="dashboardData.departmentStatistics"
           ></app-average-quality-score-by-department>
         </div>
         <div class="min-w-0 flex-1 basis-full lg:basis-96">
           <h3 class="mb-1 text-sm font-semibold text-gray-600">Kontaktverteilung</h3>
           <app-contacts-by-department
             class="block h-55"
-            [data]="dashboard()!.departmentStatistics"
+            [data]="dashboardData.departmentStatistics"
           ></app-contacts-by-department>
         </div>
       </div>
     </section>
-  }
-  @if (dashboard()?.communicationEvents != null) {
     <app-contacts-over-time
-      class="col-span-2 block h-100 min-w-0"
-      [data]="dashboard()!.communicationEvents"
+      class="col-span-full block h-100 min-w-0 lg:col-span-2"
+      [data]="dashboardData.communicationEvents"
       [period]="selectedPeriod()"
     ></app-contacts-over-time>
     <app-waiting-quality-heatmap
-      class="col-span-2 block h-100 min-w-0"
-      [data]="dashboard()!.communicationEvents"
+      class="col-span-full block h-100 min-w-0 lg:col-span-2"
+      [data]="dashboardData.communicationEvents"
     ></app-waiting-quality-heatmap>
   }
 </div>
