@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using Digicom.Api.Features.Dashboard;
 using Digicom.Api.Infrastructure;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
 namespace Digicom.Api;
@@ -15,9 +16,13 @@ public class Program
             options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         );
 
-        builder.Services.AddDbContext<AppDbContext>(options =>
-            options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"))
+        var connectionString = ResolveConnectionString(
+            builder.Configuration.GetConnectionString("DefaultConnection")
+                ?? throw new InvalidOperationException("DefaultConnection is required."),
+            builder.Environment.ContentRootPath
         );
+
+        builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite(connectionString));
 
         // Add services to the container.
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -39,6 +44,9 @@ public class Program
         {
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             Directory.CreateDirectory(Path.Combine(app.Environment.ContentRootPath, "data"));
+            var databasePath = db.Database.GetDbConnection().DataSource;
+            if (Path.IsPathRooted(databasePath))
+                Directory.CreateDirectory(Path.GetDirectoryName(databasePath)!);
             await db.Database.MigrateAsync();
 
             var importer = scope.ServiceProvider.GetRequiredService<CommunicationCsvImporter>();
@@ -50,5 +58,18 @@ public class Program
         GetDashboard.MapEndpoint(app);
 
         await app.RunAsync();
+    }
+
+    internal static string ResolveConnectionString(string connectionString, string contentRootPath)
+    {
+        var sqlite = new SqliteConnectionStringBuilder(connectionString);
+        if (
+            sqlite.Mode != SqliteOpenMode.Memory
+            && !string.IsNullOrEmpty(sqlite.DataSource)
+            && sqlite.DataSource != ":memory:"
+        )
+            sqlite.DataSource = Path.GetFullPath(sqlite.DataSource, contentRootPath);
+
+        return sqlite.ToString();
     }
 }
