@@ -4,13 +4,13 @@ namespace Digicom.Api.Features.Dashboard;
 
 public sealed class DashboardCalculationService
 {
-    public DashboardResponse Calculate(CommunicationEvent[] events)
+    public DashboardDto Calculate(CommunicationEvent[] events)
     {
         int total = events.Length;
 
         if (total == 0)
         {
-            return new DashboardResponse(
+            return new DashboardDto(
                 TotalEvents: 0,
                 InboundEvents: 0,
                 OutboundEvents: 0,
@@ -39,10 +39,10 @@ public sealed class DashboardCalculationService
         double averageQualityScore = CalculateAverageQualityScore(events);
         double reachabilityRate = CalculateReachabilityRate(events, inbound);
 
-        CommunicationEventResponse[] communicationEvents = MapCommunicationEvents(events);
-        DepartmentStatisticsResponse[] departmentStatistics = CalculateDepartmentStatistics(events);
+        CommunicationEventDto[] communicationEvents = MapCommunicationEvents(events);
+        DepartmentStatisticsDto[] departmentStatistics = CalculateDepartmentStatistics(events);
 
-        return new DashboardResponse(
+        return new DashboardDto(
             TotalEvents: total,
             InboundEvents: inbound,
             OutboundEvents: outbound,
@@ -75,12 +75,12 @@ public sealed class DashboardCalculationService
         return events.Count(e => e.Status == status);
     }
 
-    private static CommunicationEventResponse[] MapCommunicationEvents(
+    private static CommunicationEventDto[] MapCommunicationEvents(
         IEnumerable<CommunicationEvent> events
     )
     {
         return events
-            .Select(e => new CommunicationEventResponse(
+            .Select(e => new CommunicationEventDto(
                 Timestamp: e.Timestamp,
                 Direction: e.Direction.ToString(),
                 WaitingTimeSeconds: e.WaitingTimeSeconds,
@@ -131,13 +131,13 @@ public sealed class DashboardCalculationService
         return inbound == 0 ? 0 : (double)answeredInbound / inbound * 100;
     }
 
-    internal static DepartmentStatisticsResponse[] CalculateDepartmentStatistics(
+    internal static DepartmentStatisticsDto[] CalculateDepartmentStatistics(
         IEnumerable<CommunicationEvent> events
     )
     {
         return events
             .GroupBy(e => e.Department)
-            .Select(g => new DepartmentStatisticsResponse(
+            .Select(g => new DepartmentStatisticsDto(
                 Department: g.Key,
                 AverageWaitingTimeSeconds: CalculateAverageWaitingTime(g),
                 AverageQualityScore: CalculateAverageQualityScore(g),

@@ -12,7 +12,7 @@ public static class GetDashboard
         endpoints.MapGet("/api/dashboard", HandleAsync).WithName("GetDashboard");
     }
 
-    private static async Task<Results<Ok<DashboardResponse>, BadRequest<string>>> HandleAsync(
+    private static async Task<Results<Ok<DashboardDto>, BadRequest<string>>> HandleAsync(
         DateTime? from,
         DateTime? to,
         AppDbContext db,
@@ -54,13 +54,13 @@ public static class GetDashboard
 
         CommunicationEvent[] events = await query.ToArrayAsync(cancellationToken);
 
-        DashboardResponse response = calculationService.Calculate(events);
+        DashboardDto response = calculationService.Calculate(events);
 
         return TypedResults.Ok(response);
     }
 }
 
-public sealed record DashboardResponse(
+public sealed record DashboardDto(
     int TotalEvents,
     int InboundEvents,
     int OutboundEvents,
@@ -72,18 +72,18 @@ public sealed record DashboardResponse(
     double AverageWaitingTimeSeconds,
     double AverageQualityScore,
     double ReachabilityRate,
-    CommunicationEventResponse[] CommunicationEvents,
-    DepartmentStatisticsResponse[] DepartmentStatistics
+    CommunicationEventDto[] CommunicationEvents,
+    DepartmentStatisticsDto[] DepartmentStatistics
 );
 
-public sealed record CommunicationEventResponse(
+public sealed record CommunicationEventDto(
     DateTime Timestamp,
     string Direction,
     int WaitingTimeSeconds,
     int? QualityScore
 );
 
-public sealed record DepartmentStatisticsResponse(
+public sealed record DepartmentStatisticsDto(
     string Department,
     double AverageWaitingTimeSeconds,
     double AverageQualityScore,

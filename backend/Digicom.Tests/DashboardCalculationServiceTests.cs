@@ -61,13 +61,13 @@ public sealed class DashboardCalculationServiceTests
         var departments = DashboardCalculationService.CalculateDepartmentStatistics(events);
 
         await Assert.That(departments.Length).IsEqualTo(2);
-        await Assert.That(departments[0]).IsEqualTo(new DepartmentStatisticsResponse(
+        await Assert.That(departments[0]).IsEqualTo(new DepartmentStatisticsDto(
             Department: "Support",
             AverageWaitingTimeSeconds: 20,
             AverageQualityScore: 0,
             ContactAmount: 2
         ));
-        await Assert.That(departments[1]).IsEqualTo(new DepartmentStatisticsResponse(
+        await Assert.That(departments[1]).IsEqualTo(new DepartmentStatisticsDto(
             Department: "Sales",
             AverageWaitingTimeSeconds: 10,
             AverageQualityScore: 2,

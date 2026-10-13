@@ -26,7 +26,7 @@ public sealed class DashboardIntegrationTests
         );
 
         await Assert.That(response.StatusCode).IsEqualTo(HttpStatusCode.OK);
-        var dashboard = await response.Content.ReadFromJsonAsync<DashboardResponse>();
+        var dashboard = await response.Content.ReadFromJsonAsync<DashboardDto>();
         await Assert.That(dashboard).IsNotNull();
         await Assert.That(dashboard!.TotalEvents).IsEqualTo(2);
         await Assert.That(dashboard.AnsweredEvents).IsEqualTo(1);
