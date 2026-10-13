@@ -69,7 +69,7 @@ export class WaitingQualityHeatmapComponent {
     }));
 
     for (const event of this.data()) {
-      if (event.direction !== 'Inbound') {
+      if (event.direction !== 'Inbound' || event.qualityScore == null) {
         continue;
       }
 
