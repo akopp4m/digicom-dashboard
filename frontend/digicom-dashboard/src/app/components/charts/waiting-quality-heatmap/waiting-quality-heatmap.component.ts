@@ -1,5 +1,5 @@
 import { Component, computed, input } from '@angular/core';
-import { formatNumber } from '../../../utils/number-format.utils';
+import { calculatePercentage, formatNumber } from '../../../utils/number.utils';
 import { NgxEchartsDirective, provideEchartsCore } from 'ngx-echarts';
 import * as echarts from 'echarts/core';
 import { HeatmapChart } from 'echarts/charts';
@@ -12,12 +12,7 @@ import {
 import { CanvasRenderer } from 'echarts/renderers';
 import type { EChartsOption } from 'echarts';
 import type { CommunicationEventDTO } from '../../../models/dashboard.model';
-import {
-  CHART_COLORS,
-  CHART_TOOLTIP_STYLE,
-  calculatePercentage,
-  contrastingTextColor,
-} from '../chart.utils';
+import { CHART_COLORS, CHART_TOOLTIP_STYLE, contrastingTextColor } from '../chart.utils';
 
 echarts.use([
   HeatmapChart,

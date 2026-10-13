@@ -1,5 +1,5 @@
 import { Component, input, computed } from '@angular/core';
-import { formatNumber } from '../../../utils/number-format.utils';
+import { formatNumber } from '../../../utils/number.utils';
 import { NgxEchartsDirective, provideEchartsCore } from 'ngx-echarts';
 import * as echarts from 'echarts/core';
 import { BarChart } from 'echarts/charts';
@@ -8,14 +8,15 @@ import { CanvasRenderer } from 'echarts/renderers';
 import type { EChartsOption } from 'echarts';
 import { DepartmentStatisticsDTO } from '../../../models/dashboard.model';
 import {
-  CHART_COLORS,
-  CHART_TOOLTIP_STYLE,
-  CHART_ANIMATION,
   DEPARTMENT_BAR_GRID,
+  departmentAxis,
+  departmentBarStyle,
+  departmentBarTooltip,
   departmentColor,
   departmentLabel,
-  formatDepartmentTooltip,
 } from '../chart.utils';
+
+const formatWaitingTime = (value: number) => `${formatNumber(value, 2)} s`;
 
 echarts.use([BarChart, GridComponent, TooltipComponent, CanvasRenderer]);
 
@@ -29,29 +30,31 @@ echarts.use([BarChart, GridComponent, TooltipComponent, CanvasRenderer]);
 export class WaitingTimeByDepartmentComponent {
   readonly data = input<DepartmentStatisticsDTO[]>([]);
 
+  readonly chartData = computed(() =>
+    [...this.data()].sort((a, b) => b.averageWaitingTimeSeconds - a.averageWaitingTimeSeconds),
+  );
+
+  readonly chartDescription = computed(() => {
+    const departments = this.chartData();
+    const title = 'Durchschnittliche Wartezeit nach Abteilung.';
+    if (departments.length === 0) {
+      return `${title} Keine Daten verfügbar.`;
+    }
+
+    const waitingTimes = departments
+      .map(
+        (item) =>
+          `${departmentLabel(item.department)}: ${formatWaitingTime(item.averageWaitingTimeSeconds)}`,
+      )
+      .join('; ');
+    return `${title} ${waitingTimes}`;
+  });
+
   readonly chartOptions = computed<EChartsOption>(() => {
-    const data = [...this.data()].sort(
-      (a, b) => b.averageWaitingTimeSeconds - a.averageWaitingTimeSeconds,
-    );
+    const departments = this.chartData();
 
     return {
-      tooltip: {
-        ...CHART_TOOLTIP_STYLE,
-        trigger: 'axis',
-        axisPointer: {
-          type: 'shadow',
-        },
-        formatter: (params) => {
-          const item = Array.isArray(params) ? params[0] : params;
-          return formatDepartmentTooltip(
-            item.name,
-            item.marker,
-            'Durchschnittliche Wartezeit',
-            `${formatNumber(Number(item.value), 2)} s`,
-          );
-        },
-      },
-
+      tooltip: departmentBarTooltip('Durchschnittliche Wartezeit', formatWaitingTime),
       grid: DEPARTMENT_BAR_GRID,
       xAxis: {
         type: 'value',
@@ -59,53 +62,15 @@ export class WaitingTimeByDepartmentComponent {
         splitLine: { show: false },
       },
 
-      yAxis: {
-        type: 'category',
-        inverse: true,
-        data: data.map((x) => departmentLabel(x.department)),
-        axisLine: {
-          show: false,
-        },
-        axisTick: {
-          show: false,
-        },
-        axisLabel: {
-          color: CHART_COLORS.label,
-          fontSize: 13,
-        },
-      },
-
+      yAxis: departmentAxis(departments.map((item) => item.department)),
       series: [
         {
+          ...departmentBarStyle(formatWaitingTime),
           type: 'bar',
-          data: data.map((x) => ({
+          data: departments.map((x) => ({
             value: x.averageWaitingTimeSeconds,
             itemStyle: { color: departmentColor(x.department) },
           })),
-
-          barMaxWidth: 28,
-          barMinHeight: 4,
-
-          itemStyle: {
-            borderRadius: [0, 6, 6, 0],
-          },
-
-          label: {
-            show: true,
-            position: 'right',
-            formatter: (params) => `${formatNumber(Number(params.value), 2)} s`,
-            fontSize: 12,
-            fontWeight: 600,
-          },
-
-          emphasis: {
-            focus: 'series',
-            itemStyle: {
-              opacity: 0.85,
-            },
-          },
-
-          ...CHART_ANIMATION,
         },
       ],
     };

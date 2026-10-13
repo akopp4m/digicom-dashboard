@@ -1,5 +1,5 @@
 import { Component, computed, input } from '@angular/core';
-import { formatNumber } from '../../../utils/number-format.utils';
+import { formatNumber } from '../../../utils/number.utils';
 import { NgxEchartsDirective, provideEchartsCore } from 'ngx-echarts';
 import * as echarts from 'echarts/core';
 import { BarChart } from 'echarts/charts';

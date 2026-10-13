@@ -1,5 +1,5 @@
 import { Component, computed, input } from '@angular/core';
-import { formatNumber } from '../../../utils/number-format.utils';
+import { calculatePercentage, formatNumber } from '../../../utils/number.utils';
 import { NgxEchartsDirective, provideEchartsCore } from 'ngx-echarts';
 import * as echarts from 'echarts/core';
 import { PieChart } from 'echarts/charts';
@@ -14,7 +14,6 @@ import {
   departmentColor,
   departmentLabel,
   formatDepartmentTooltip,
-  calculatePercentage,
 } from '../chart.utils';
 
 echarts.use([PieChart, TooltipComponent, CanvasRenderer]);

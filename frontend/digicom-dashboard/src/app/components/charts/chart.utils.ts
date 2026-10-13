@@ -1,4 +1,5 @@
 import { color, format } from 'echarts/core';
+import type { BarSeriesOption, TooltipComponentOption, YAxisComponentOption } from 'echarts';
 
 export const CHART_COLORS = {
   white: '#fff',
@@ -104,6 +105,50 @@ export function formatDepartmentTooltip(
   `;
 }
 
-export function calculatePercentage(count: number, total: number): number {
-  return total > 0 ? (count / total) * 100 : 0;
+export function departmentAxis(departmentNames: string[]): YAxisComponentOption {
+  return {
+    type: 'category',
+    inverse: true,
+    data: departmentNames.map(departmentLabel),
+    axisLine: { show: false },
+    axisTick: { show: false },
+    axisLabel: { color: CHART_COLORS.label, fontSize: 13 },
+  };
+}
+
+export function departmentBarStyle(formatValue: (value: number) => string): BarSeriesOption {
+  return {
+    barMaxWidth: 28,
+    itemStyle: { borderRadius: [0, 6, 6, 0] },
+    label: {
+      show: true,
+      position: 'right',
+      formatter: (params) => formatValue(Number(params.value)),
+      fontSize: 12,
+      fontWeight: 600,
+      color: CHART_COLORS.label,
+    },
+    emphasis: { focus: 'series', itemStyle: { opacity: 0.85 } },
+    ...CHART_ANIMATION,
+  };
+}
+
+export function departmentBarTooltip(
+  metric: string,
+  formatValue: (value: number) => string,
+): TooltipComponentOption {
+  return {
+    ...CHART_TOOLTIP_STYLE,
+    trigger: 'axis',
+    axisPointer: { type: 'shadow' },
+    formatter: (params) => {
+      const item = Array.isArray(params) ? params[0] : params;
+      return formatDepartmentTooltip(
+        item.name,
+        item.marker,
+        metric,
+        formatValue(Number(item.value)),
+      );
+    },
+  };
 }

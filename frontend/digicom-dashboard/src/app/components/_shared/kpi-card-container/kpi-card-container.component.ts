@@ -3,7 +3,7 @@ import { KpiCardComponent } from '../kpi-card/kpi-card.component';
 import { DashboardDTO } from '../../../models/dashboard.model';
 import { KpiCardInput } from '../kpi-card/kpi-card.model';
 import { KPI_CARD_STYLES } from '../kpi-card/kpi-card.utils';
-import { formatNumber } from '../../../utils/number-format.utils';
+import { formatNumber } from '../../../utils/number.utils';
 
 @Component({
   selector: 'app-kpi-card-container',

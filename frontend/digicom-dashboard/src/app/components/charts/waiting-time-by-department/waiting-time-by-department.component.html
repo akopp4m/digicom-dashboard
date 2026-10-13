@@ -1,1 +1,7 @@
-<div echarts [options]="chartOptions()" class="h-full w-full"></div>
+<div
+  echarts
+  [options]="chartOptions()"
+  role="img"
+  [attr.aria-label]="chartDescription()"
+  class="h-full w-full"
+></div>
