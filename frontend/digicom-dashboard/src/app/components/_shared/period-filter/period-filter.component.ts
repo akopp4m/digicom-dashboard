@@ -40,7 +40,7 @@ export class PeriodFilterComponent {
         return {
           option,
           from: now.startOf('day'),
-          to: now,
+          to: now.startOf('day').add(1, 'day'),
         };
 
       case 'yesterday': {
@@ -55,15 +55,15 @@ export class PeriodFilterComponent {
       case '7d':
         return {
           option,
-          from: now.subtract(7, 'day'),
-          to: now,
+          from: now.startOf('day').subtract(6, 'day'),
+          to: now.startOf('day').add(1, 'day'),
         };
 
       case '30d':
         return {
           option,
-          from: now.subtract(30, 'day'),
-          to: now,
+          from: now.startOf('day').subtract(29, 'day'),
+          to: now.startOf('day').add(1, 'day'),
         };
 
       case 'all':
