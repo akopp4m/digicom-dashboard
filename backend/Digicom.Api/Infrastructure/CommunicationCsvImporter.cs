@@ -77,34 +77,80 @@ public sealed class CommunicationCsvImporter(
             // The header occupies row 1 in the supplied, single-line-record dataset.
             var row = index + 2;
 
-            void Require(bool valid, string message)
-            {
-                if (!valid)
-                    throw new InvalidDataException($"CSV record {index + 1} (row {row}): {message}");
-            }
+            if (item.Timestamp == default)
+                throw new InvalidDataException(
+                    $"CSV record {index + 1} (row {row}): Timestamp is required."
+                );
 
-            Require(item.Timestamp != default, "Timestamp is required.");
-            Require(!string.IsNullOrWhiteSpace(item.CustomerId), "CustomerId is required.");
-            Require(!string.IsNullOrWhiteSpace(item.Department), "Department is required.");
-            Require(!string.IsNullOrWhiteSpace(item.CallerNumber), "CallerNumber is required.");
-            Require(item.Agent > 0, "Agent ID must be positive.");
-            Require(Enum.IsDefined(item.Direction), "Direction must be a valid enum value.");
-            Require(Enum.IsDefined(item.Channel), "Channel must be a valid enum value.");
-            Require(Enum.IsDefined(item.Status), "Status must be a valid enum value.");
-            Require(item.DurationSeconds >= 0, "DurationSeconds must be non-negative.");
-            Require(item.WaitingTimeSeconds >= 0, "WaitingTimeSeconds must be non-negative.");
-            Require(item.QualityScore is not (< 1 or > 5), "QualityScore must be between 1 and 5.");
+            if (string.IsNullOrWhiteSpace(item.CustomerId))
+                throw new InvalidDataException(
+                    $"CSV record {index + 1} (row {row}): CustomerId is required."
+                );
 
-            if (item.Direction == CommunicationDirection.Outbound)
-            {
-                Require(item.WaitingTimeSeconds == 0, "Outbound calls must have zero waiting time.");
-                Require(!item.QualityScore.HasValue, "Outbound calls must not have a quality score.");
-            }
+            if (string.IsNullOrWhiteSpace(item.Department))
+                throw new InvalidDataException(
+                    $"CSV record {index + 1} (row {row}): Department is required."
+                );
 
-            if (item.Status == CommunicationStatus.Answered)
-                Require(item.DurationSeconds > 0, "Answered calls must have a positive duration.");
-            else
-                Require(item.DurationSeconds == 0, "Unanswered calls must have zero duration.");
+            if (string.IsNullOrWhiteSpace(item.CallerNumber))
+                throw new InvalidDataException(
+                    $"CSV record {index + 1} (row {row}): CallerNumber is required."
+                );
+
+            if (item.Agent <= 0)
+                throw new InvalidDataException(
+                    $"CSV record {index + 1} (row {row}): Agent ID must be positive."
+                );
+
+            if (!Enum.IsDefined(item.Direction))
+                throw new InvalidDataException(
+                    $"CSV record {index + 1} (row {row}): Direction must be a valid enum value."
+                );
+
+            if (!Enum.IsDefined(item.Channel))
+                throw new InvalidDataException(
+                    $"CSV record {index + 1} (row {row}): Channel must be a valid enum value."
+                );
+
+            if (!Enum.IsDefined(item.Status))
+                throw new InvalidDataException(
+                    $"CSV record {index + 1} (row {row}): Status must be a valid enum value."
+                );
+
+            if (item.DurationSeconds < 0)
+                throw new InvalidDataException(
+                    $"CSV record {index + 1} (row {row}): DurationSeconds must be non-negative."
+                );
+
+            if (item.WaitingTimeSeconds < 0)
+                throw new InvalidDataException(
+                    $"CSV record {index + 1} (row {row}): WaitingTimeSeconds must be non-negative."
+                );
+
+            if (item.QualityScore is < 1 or > 5)
+                throw new InvalidDataException(
+                    $"CSV record {index + 1} (row {row}): QualityScore must be between 1 and 5."
+                );
+
+            if (item.Direction == CommunicationDirection.Outbound && item.WaitingTimeSeconds != 0)
+                throw new InvalidDataException(
+                    $"CSV record {index + 1} (row {row}): Outbound calls must have zero waiting time."
+                );
+
+            if (item.Direction == CommunicationDirection.Outbound && item.QualityScore.HasValue)
+                throw new InvalidDataException(
+                    $"CSV record {index + 1} (row {row}): Outbound calls must not have a quality score."
+                );
+
+            if (item.Status == CommunicationStatus.Answered && item.DurationSeconds == 0)
+                throw new InvalidDataException(
+                    $"CSV record {index + 1} (row {row}): Answered calls must have a positive duration."
+                );
+
+            if (item.Status != CommunicationStatus.Answered && item.DurationSeconds != 0)
+                throw new InvalidDataException(
+                    $"CSV record {index + 1} (row {row}): Unanswered calls must have zero duration."
+                );
         }
     }
 }
