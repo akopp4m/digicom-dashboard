@@ -1,8 +1,8 @@
 # Synthetic Test Data — v7
 
-These notes document the synthetic test data required by §4 of `Digicom_Aufgabenstellung.pdf`: generation, AI assistance, assumptions, intentional anomalies, plausibility checks, and limitations. KPI definitions and visualization explanations also support §5–7 and the submission documentation in §12.
+These notes document the synthetic test data required by §4 of [Digicom_Aufgabenstellung.pdf](Digicom_Aufgabenstellung.pdf): generation, AI assistance, assumptions, intentional anomalies, plausibility checks, and limitations. KPI definitions and visualization explanations also support §5–7 and the submission documentation in §12.
 
-The dataset is `digicom_communications_v7.csv`, with an identical application copy at `backend/Digicom.Api/data/digicom_communications_v7.csv`. Statistics were recalculated directly from v7 on 14 October 2026. These notes replace the earlier notes for the current submission.
+The dataset copy in this folder is `digicom_communications_v7.csv`. The application imports the identical `backend/Digicom.Api/data/digicom_communications_v7.csv` file, relative to the repository root. Statistics were recalculated directly from v7 on 14 October 2026.
 
 ## Relation to the exercise
 
@@ -142,7 +142,7 @@ The structural and business plausibility review checked all 793 rows for:
 - Nonnegative durations and waits; positive duration on answered contacts and zero duration on unanswered contacts.
 - Zero waiting time on outbound contacts.
 - A score from 1 to 5 on every answered inbound contact and no score on any other contact.
-- Identical root and API copies, preservation of all non-score values from v6, and exactly 90 cleared scores.
+- Identical documentation and API copies, preservation of all non-score values from v6, and exactly 90 cleared scores.
 
 Dataset-level checks also recalculated the department and status distributions, event counts per date, midday concentration, departmental waits, and waiting-time/quality correlation. These establish that the dataset contains the intended patterns and meets the minimum size and original-workday requirements.
 
