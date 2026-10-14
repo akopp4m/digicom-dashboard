@@ -6,10 +6,10 @@ export interface DashboardDTO {
   missedEvents: number;
   abandonedEvents: number;
   failedEvents: number;
-  averageDurationSeconds: number;
-  averageWaitingTimeSeconds: number;
-  averageQualityScore: number;
-  reachabilityRate: number;
+  averageDurationSeconds?: number;
+  averageWaitingTimeSeconds?: number;
+  averageQualityScore?: number;
+  reachabilityRate?: number;
 
   communicationEvents: CommunicationEventDTO[];
   departmentStatistics: DepartmentStatisticsDTO[];
@@ -28,7 +28,7 @@ export type CommunicationEventDTO = CommunicationEventBaseDTO &
 
 export interface DepartmentStatisticsDTO {
   department: string;
-  averageWaitingTimeSeconds: number;
-  averageQualityScore: number;
+  averageWaitingTimeSeconds?: number;
+  averageQualityScore?: number;
   contactAmount: number;
 }
