@@ -49,12 +49,12 @@ describe('WaitingQualityHeatmapComponent', () => {
 
     const cells = component.chartData();
     const band = cells.filter((cell) => cell.bandIndex === 4);
-    expect(band.every((cell) => cell.total === 3)).toBe(true);
+    expect(band.every((cell) => cell.bandTotal === 3)).toBe(true);
     expect(band.find((cell) => cell.rating === 3)?.percentage).toBeCloseTo(200 / 3);
     expect(band.find((cell) => cell.rating === 4)?.percentage).toBeCloseTo(100 / 3);
     expect(cells.find((cell) => cell.bandIndex === 5 && cell.rating === 2)?.percentage).toBe(100);
     expect(cells.every((cell) => Number.isFinite(cell.percentage))).toBe(true);
-    expect(cells.filter((cell) => cell.bandIndex === 0).every((cell) => cell.total === 0)).toBe(
+    expect(cells.filter((cell) => cell.bandIndex === 0).every((cell) => cell.bandTotal === 0)).toBe(
       true,
     );
   });
@@ -62,7 +62,7 @@ describe('WaitingQualityHeatmapComponent', () => {
   it('keeps a band empty when it contains only unrated contacts', () => {
     fixture.componentRef.setInput('data', [inbound(150, undefined)]);
 
-    expect(component.chartData().every((cell) => cell.total === 0 && cell.percentage === 0)).toBe(
+    expect(component.chartData().every((cell) => cell.bandTotal === 0 && cell.percentage === 0)).toBe(
       true,
     );
   });
