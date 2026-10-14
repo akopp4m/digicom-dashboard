@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Service } from '@angular/core';
-import { Observable } from 'rxjs';
-import { DashboardDTO } from '../models/dashboard.model';
+import type { Observable } from 'rxjs';
+import type { DashboardDTO } from '../models/dashboard.model';
 
 @Service()
 export class DashboardService {

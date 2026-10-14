@@ -6,7 +6,7 @@ import { BarChart } from 'echarts/charts';
 import { GridComponent, TooltipComponent } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
 import type { EChartsOption } from 'echarts';
-import { DepartmentStatisticsDTO } from '../../../models/dashboard.model';
+import type { DepartmentStatisticsDTO } from '../../../models/dashboard.model';
 import {
   DEPARTMENT_BAR_GRID,
   DEPARTMENT_VALUE_AXIS,

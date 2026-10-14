@@ -7,7 +7,7 @@ import { GridComponent, LegendComponent, TooltipComponent } from 'echarts/compon
 import { CanvasRenderer } from 'echarts/renderers';
 import type { EChartsOption } from 'echarts';
 import dayjs from 'dayjs/esm';
-import { CommunicationEventDTO } from '../../../models/dashboard.model';
+import type { CommunicationEventDTO } from '../../../models/dashboard.model';
 import type { PeriodDates } from '../../_shared/period-filter/period-filter.component';
 import { CHART_COLORS, CHART_TOOLTIP_STYLE } from '../chart.utils';
 

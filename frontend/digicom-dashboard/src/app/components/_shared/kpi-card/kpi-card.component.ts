@@ -1,5 +1,5 @@
 import { Component, input } from '@angular/core';
-import { KpiCardInput } from './kpi-card.model';
+import type { KpiCardInput } from './kpi-card.model';
 
 @Component({
   imports: [],
