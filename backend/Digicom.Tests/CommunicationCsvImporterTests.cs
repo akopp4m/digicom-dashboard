@@ -79,7 +79,7 @@ public sealed class CommunicationCsvImporterTests
     }
 
     private static string DatasetPath =>
-        Path.Combine(AppContext.BaseDirectory, "data", "digicom_communications_v6.csv");
+        Path.Combine(AppContext.BaseDirectory, "data", "digicom_communications_v7.csv");
 
     private static List<DateTime> ReadDatasetTimestamps()
     {

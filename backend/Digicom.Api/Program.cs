@@ -51,7 +51,7 @@ public class Program
 
             var importer = scope.ServiceProvider.GetRequiredService<CommunicationCsvImporter>();
             await importer.ImportIfEmptyAsync(
-                Path.Combine(app.Environment.ContentRootPath, "data", "digicom_communications_v6.csv")
+                Path.Combine(app.Environment.ContentRootPath, "data", "digicom_communications_v7.csv")
             );
         }
 

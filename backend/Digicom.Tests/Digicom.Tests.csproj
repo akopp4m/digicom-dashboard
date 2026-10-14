@@ -18,6 +18,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="../Digicom.Api/data/digicom_communications_v6.csv" Link="data/digicom_communications_v6.csv" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../Digicom.Api/data/digicom_communications_v7.csv" Link="data/digicom_communications_v7.csv" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>
