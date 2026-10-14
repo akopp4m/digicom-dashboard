@@ -62,26 +62,36 @@ export class KpiCardContainerComponent {
     return [
       {
         label: 'Erreichbarkeit',
-        value: formatNumber(dashboard.reachabilityRate, 1),
-        unit: '%',
+        value:
+          dashboard.reachabilityRate == null ? '–' : formatNumber(dashboard.reachabilityRate, 1),
+        unit: dashboard.reachabilityRate == null ? '' : '%',
         ...KPI_CARD_STYLES.success,
       },
       {
         label: 'Durchschn. Wartezeit',
-        value: formatNumber(dashboard.averageWaitingTimeSeconds),
-        unit: 's',
+        value:
+          dashboard.averageWaitingTimeSeconds == null
+            ? '–'
+            : formatNumber(dashboard.averageWaitingTimeSeconds),
+        unit: dashboard.averageWaitingTimeSeconds == null ? '' : 's',
         ...KPI_CARD_STYLES.warning,
       },
       {
         label: 'Durchschn. Dauer',
-        value: formatNumber(dashboard.averageDurationSeconds),
-        unit: 's',
+        value:
+          dashboard.averageDurationSeconds == null
+            ? '–'
+            : formatNumber(dashboard.averageDurationSeconds),
+        unit: dashboard.averageDurationSeconds == null ? '' : 's',
         ...KPI_CARD_STYLES.duration,
       },
       {
         label: 'Durchschn. Qualität',
-        value: formatNumber(dashboard.averageQualityScore, 1),
-        unit: '/ 5',
+        value:
+          dashboard.averageQualityScore == null
+            ? '–'
+            : formatNumber(dashboard.averageQualityScore, 1),
+        unit: dashboard.averageQualityScore == null ? '' : '/ 5',
         ...KPI_CARD_STYLES.quality,
       },
     ];
