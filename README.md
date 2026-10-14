@@ -284,6 +284,7 @@ A manual functional review has been performed prior to hand-in.
 - **Deployment:** Startup import assumes one backend instance. Concurrent initialization is not guarded against duplicate import. There is no durable database volume, authentication, or production hosting configuration.
 - **Scale:** The API loads the selected events into memory and returns event-level chart data. This is reasonable for the supplied dataset; larger datasets would benefit from server-side chart aggregation and smaller responses.
 - **Synthetic data:** Ratings, traffic patterns, and numbers are artificial and are not evidence for operational decisions. Rating eligibility is a dataset convention that the heatmap relies on.
+- **Platform compatibility:** The application has been tested on Linux and macOS. The Docker-based setup is expected to work on Windows as well, although Docker setup and commands may differ. Windows compatibility has not been verified.
 
 ## Possible next steps
 
