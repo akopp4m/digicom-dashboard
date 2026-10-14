@@ -11,6 +11,7 @@ describe('KpiCardComponent', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(KpiCardComponent);
+    fixture.componentRef.setInput('data', { label: 'Kontakte Gesamt', value: '0' });
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

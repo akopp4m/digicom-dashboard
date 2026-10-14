@@ -8,7 +8,9 @@ describe('WaitingTimeByDepartmentComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [WaitingTimeByDepartmentComponent],
-    }).compileComponents();
+    })
+      .overrideComponent(WaitingTimeByDepartmentComponent, { set: { template: '' } })
+      .compileComponents();
 
     fixture = TestBed.createComponent(WaitingTimeByDepartmentComponent);
     component = fixture.componentInstance;

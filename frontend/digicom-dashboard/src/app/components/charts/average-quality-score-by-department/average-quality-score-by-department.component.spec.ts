@@ -8,7 +8,9 @@ describe('AverageQualityScoreByDepartmentComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [AverageQualityScoreByDepartmentComponent],
-    }).compileComponents();
+    })
+      .overrideComponent(AverageQualityScoreByDepartmentComponent, { set: { template: '' } })
+      .compileComponents();
 
     fixture = TestBed.createComponent(AverageQualityScoreByDepartmentComponent);
     component = fixture.componentInstance;

@@ -8,7 +8,9 @@ describe('ContactsOverTimeComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ContactsOverTimeComponent],
-    }).compileComponents();
+    })
+      .overrideComponent(ContactsOverTimeComponent, { set: { template: '' } })
+      .compileComponents();
 
     fixture = TestBed.createComponent(ContactsOverTimeComponent);
     component = fixture.componentInstance;

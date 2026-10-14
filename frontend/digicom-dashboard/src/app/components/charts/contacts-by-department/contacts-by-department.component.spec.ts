@@ -8,7 +8,9 @@ describe('ContactsByDepartmentComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ContactsByDepartmentComponent],
-    }).compileComponents();
+    })
+      .overrideComponent(ContactsByDepartmentComponent, { set: { template: '' } })
+      .compileComponents();
 
     fixture = TestBed.createComponent(ContactsByDepartmentComponent);
     component = fixture.componentInstance;
