@@ -1,6 +1,18 @@
 @Digicom.Api_HostAddress = http://localhost:5125
 
-GET {{Digicom.Api_HostAddress}}/weatherforecast/
+### Complete dashboard
+GET {{Digicom.Api_HostAddress}}/api/dashboard
 Accept: application/json
 
-###
+### Bounded period: inclusive start, exclusive end (UTC)
+# Adjust these dates to match the imported dataset, whose dates shift on first import.
+GET {{Digicom.Api_HostAddress}}/api/dashboard?from=2026-10-14T00:00:00Z&to=2026-10-15T00:00:00Z
+Accept: application/json
+
+### Empty period
+GET {{Digicom.Api_HostAddress}}/api/dashboard?from=2100-01-01T00:00:00Z&to=2100-01-02T00:00:00Z
+Accept: application/json
+
+### Invalid request: missing end boundary (expected HTTP 400)
+GET {{Digicom.Api_HostAddress}}/api/dashboard?from=2026-10-14T00:00:00Z
+Accept: application/json
