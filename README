@@ -29,9 +29,15 @@ docker compose down
 SQLite lives at `/app/data/digicom.db` in the backend container's writable
 filesystem. No Docker volumes or source-code bind mounts are configured.
 On startup, the backend applies its existing migrations and imports
-`backend/Digicom.Api/data/digicom_communications_v6.csv` only when the
+`backend/Digicom.Api/data/digicom_communications_v7.csv` only when the
 database contains no communication events. This dataset is included in
-the published backend image, including nullable outbound quality scores.
+the published backend image. Quality scores are populated only for answered
+inbound contacts; outbound and unanswered contacts have no quality score.
+
+Existing databases are not updated when the CSV changes. If your database
+was initialized from v6, recreate the Docker containers using the commands
+below to import v7. For local development, stop the backend and remove
+`backend/Digicom.Api/data/digicom.db` before restarting to import v7.
 
 To obtain a fresh database, remove the containers and recreate them:
 
