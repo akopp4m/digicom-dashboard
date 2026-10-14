@@ -31,7 +31,12 @@ export class AverageQualityScoreByDepartmentComponent {
   readonly data = input<DepartmentStatisticsDTO[]>([]);
 
   readonly chartData = computed(() =>
-    [...this.data()].sort((a, b) => b.averageQualityScore - a.averageQualityScore),
+    this.data()
+      .filter(
+        (department): department is DepartmentStatisticsDTO & { averageQualityScore: number } =>
+          department.averageQualityScore != null,
+      )
+      .sort((a, b) => b.averageQualityScore - a.averageQualityScore),
   );
 
   readonly chartOptions = computed<EChartsOption>(() => {

@@ -31,7 +31,14 @@ export class WaitingTimeByDepartmentComponent {
   readonly data = input<DepartmentStatisticsDTO[]>([]);
 
   readonly chartData = computed(() =>
-    [...this.data()].sort((a, b) => b.averageWaitingTimeSeconds - a.averageWaitingTimeSeconds),
+    this.data()
+      .filter(
+        (
+          department,
+        ): department is DepartmentStatisticsDTO & { averageWaitingTimeSeconds: number } =>
+          department.averageWaitingTimeSeconds != null,
+      )
+      .sort((a, b) => b.averageWaitingTimeSeconds - a.averageWaitingTimeSeconds),
   );
 
   readonly chartOptions = computed<EChartsOption>(() => {
