@@ -24,7 +24,6 @@ import type { Subscription } from 'rxjs';
     ContactsByDepartmentComponent,
   ],
   selector: 'app-dashboard',
-  styleUrl: './dashboard.component.css',
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent implements OnInit, OnDestroy {

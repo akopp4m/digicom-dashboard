@@ -9,7 +9,6 @@ import { formatNumber } from '../../../utils/number.utils';
   selector: 'app-kpi-card-container',
   imports: [KpiCardComponent],
   templateUrl: './kpi-card-container.component.html',
-  styleUrl: './kpi-card-container.component.css',
 })
 export class KpiCardContainerComponent {
   readonly data = input.required<DashboardDTO>();

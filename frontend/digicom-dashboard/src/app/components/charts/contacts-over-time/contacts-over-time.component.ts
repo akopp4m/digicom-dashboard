@@ -23,7 +23,6 @@ echarts.use([BarChart, GridComponent, LegendComponent, TooltipComponent, CanvasR
   selector: 'app-contacts-over-time',
   imports: [NgxEchartsDirective],
   providers: [provideEchartsCore({ echarts })],
-  styleUrl: './contacts-over-time.component.css',
   templateUrl: './contacts-over-time.component.html',
 })
 export class ContactsOverTimeComponent {

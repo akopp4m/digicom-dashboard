@@ -24,7 +24,6 @@ echarts.use([BarChart, GridComponent, TooltipComponent, CanvasRenderer]);
   selector: 'app-waiting-time-by-department',
   imports: [NgxEchartsDirective],
   providers: [provideEchartsCore({ echarts })],
-  styleUrl: './waiting-time-by-department.component.css',
   templateUrl: './waiting-time-by-department.component.html',
 })
 export class WaitingTimeByDepartmentComponent {

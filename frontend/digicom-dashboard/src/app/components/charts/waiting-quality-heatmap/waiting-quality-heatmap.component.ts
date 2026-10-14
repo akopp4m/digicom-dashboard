@@ -52,7 +52,6 @@ interface HeatmapCell {
   imports: [NgxEchartsDirective],
   providers: [provideEchartsCore({ echarts })],
   selector: 'app-waiting-quality-heatmap',
-  styleUrl: './waiting-quality-heatmap.component.css',
   templateUrl: './waiting-quality-heatmap.component.html',
 })
 export class WaitingQualityHeatmapComponent {

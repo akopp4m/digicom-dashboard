@@ -21,7 +21,6 @@ echarts.use([PieChart, TooltipComponent, CanvasRenderer]);
   imports: [NgxEchartsDirective],
   providers: [provideEchartsCore({ echarts })],
   templateUrl: './contacts-by-department.component.html',
-  styleUrl: './contacts-by-department.component.css',
 })
 export class ContactsByDepartmentComponent {
   readonly data = input<DepartmentStatisticsDTO[]>([]);

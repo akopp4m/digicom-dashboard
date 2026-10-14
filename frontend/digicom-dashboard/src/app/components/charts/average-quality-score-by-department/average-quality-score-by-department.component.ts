@@ -25,7 +25,6 @@ echarts.use([BarChart, GridComponent, TooltipComponent, CanvasRenderer]);
   imports: [NgxEchartsDirective],
   providers: [provideEchartsCore({ echarts })],
   templateUrl: './average-quality-score-by-department.component.html',
-  styleUrl: './average-quality-score-by-department.component.css',
 })
 export class AverageQualityScoreByDepartmentComponent {
   readonly data = input<DepartmentStatisticsDTO[]>([]);

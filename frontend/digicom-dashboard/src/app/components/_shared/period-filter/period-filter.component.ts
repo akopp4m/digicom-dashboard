@@ -17,7 +17,6 @@ export type PeriodDates =
 @Component({
   selector: 'app-period-filter',
   templateUrl: './period-filter.component.html',
-  styleUrl: './period-filter.component.css',
 })
 export class PeriodFilterComponent {
   readonly periodChange = output<PeriodDates>();
